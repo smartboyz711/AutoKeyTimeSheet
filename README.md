@@ -3,7 +3,7 @@ by Theedanai Poomilamnao 18/02/2024
 
 Download python จาก https://www.python.org/ 
 
-หลังจาก git clone run command ใน foldder 
+หลังจาก git clone run command ใน folder 
 
 -> pip install -r requirements.txt 
 
