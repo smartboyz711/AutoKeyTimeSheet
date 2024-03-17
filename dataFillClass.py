@@ -42,10 +42,14 @@ class Data_fill:
         self.statusMessage = statusMessage
 
     def get_id_billtype(self):
-        if (self.billType == "Non-Billable"):
+        if (self.billType == "Regular"):
+            return "cphContent_rdoPopBillType_0"  # Non-Billable
+        elif (self.billType == "Overtime"):
+            return "cphContent_rdoPopBillType_1"  # Regular
+        elif (self.billType == "Non-Billable"):
             return "cphContent_rdoPopBillType_2"  # Non-Billable
-        elif (self.billType == "Regular"):
-            return "cphContent_rdoPopBillType_0"  # Regular
+        elif (self.billType == "Overtime Nonbill"):
+            return "cphContent_rdoPopBillType_3"  # Regular
 
     def as_dict(self):
         return {
