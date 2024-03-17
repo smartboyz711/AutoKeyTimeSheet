@@ -16,7 +16,7 @@ class Description:
         self.comment = comment
 
     def __str__(self) -> str:
-        return f"{self.parent_summary}\n- Sub task : {self.issue_summary}\n- Conmment : {self.comment}"
+        return f"{self.parent_summary}\n- Sub task : {self.issue_summary}\n- Comment : {self.comment}"
 
 
 class Data_fill:
