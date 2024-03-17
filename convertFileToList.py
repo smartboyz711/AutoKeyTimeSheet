@@ -117,7 +117,7 @@ def convertFileToList(file: ExcelFile) -> list[Data_fill]:
             if (task == "Leave" 
                 or (parent_summary == "Meeting not related to software development" and comment == "Internal ATS Activity")) : 
                 billType = "Non-Billable"
-            elif (comment.startswith("OT :")) :
+            elif (comment.startswith("OT")) :
                 billType = "Overtime"
             else:
                 billType = "Regular"
