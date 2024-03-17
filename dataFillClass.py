@@ -41,7 +41,7 @@ class Data_fill:
         self.description = description
         self.statusMessage = statusMessage
 
-    def get_id_billtype(self):
+    def get_id_billtype(self) -> str :
         if (self.billType == "Regular"):
             return "cphContent_rdoPopBillType_0"  # Regular
         elif (self.billType == "Overtime"):
@@ -50,8 +50,10 @@ class Data_fill:
             return "cphContent_rdoPopBillType_2"  # Non-Billable
         elif (self.billType == "Overtime Nonbill"):
             return "cphContent_rdoPopBillType_3"  # Overtime Nonbill
+        else :
+            return "cphContent_rdoPopBillType_0"  # Regular
 
-    def as_dict(self):
+    def as_dict(self) :
         return {
             "Datetime": self.filldatetime.strftime(defaultData.df_string),
             "Customer": self.customer,

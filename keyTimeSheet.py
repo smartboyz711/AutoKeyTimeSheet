@@ -153,6 +153,8 @@ def fill_taskData(driver: WebDriver, data_fill: Data_fill):
         EC.text_to_be_present_in_element((By.ID, "cphContent_ddlPopTask"), data_fill.task))
     Select(pnlAddEditTimelist.find_element(
         By.ID, value="cphContent_ddlPopTask")).select_by_visible_text(data_fill.task)
+    WebDriverWait(driver, timeout=defaultData.time_out).until(
+            EC.element_to_be_clickable((By.ID, data_fill.get_id_billtype())))
     pnlAddEditTimelist.find_element(
         By.ID, value=data_fill.get_id_billtype()).click()
     pnlAddEditTimelist.find_element(
