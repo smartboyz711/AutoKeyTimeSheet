@@ -43,13 +43,13 @@ class Data_fill:
 
     def get_id_billtype(self):
         if (self.billType == "Regular"):
-            return "cphContent_rdoPopBillType_0"  # Non-Billable
+            return "cphContent_rdoPopBillType_0"  # Regular
         elif (self.billType == "Overtime"):
-            return "cphContent_rdoPopBillType_1"  # Regular
+            return "cphContent_rdoPopBillType_1"  # Overtime
         elif (self.billType == "Non-Billable"):
             return "cphContent_rdoPopBillType_2"  # Non-Billable
         elif (self.billType == "Overtime Nonbill"):
-            return "cphContent_rdoPopBillType_3"  # Regular
+            return "cphContent_rdoPopBillType_3"  # Overtime Nonbill
 
     def as_dict(self):
         return {
