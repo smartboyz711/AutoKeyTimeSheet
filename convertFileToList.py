@@ -114,12 +114,15 @@ def convertFileToList(file: ExcelFile) -> list[Data_fill]:
             else:
                 task = defaultData.default_task
 
-            if (task == "Leave"):
+            if (task == "Leave" 
+                or (parent_summary == "Meeting not related to software development" and comment == "Internal ATS Activity")) : 
                 billType = "Non-Billable"
+            elif (comment.startswith("OT :")) :
+                billType = "Overtime"
             else:
                 billType = "Regular"
 
-            description = Description(
+            description = Description (
                 parent_key=parent_key,
                 parent_summary=parent_summary,
                 issue_Type=issue_Type,
@@ -127,7 +130,7 @@ def convertFileToList(file: ExcelFile) -> list[Data_fill]:
                 comment=comment
             )
 
-            data_fill = Data_fill(
+            data_fill = Data_fill (
                 customer=customer,
                 project=project,
                 role=role,
