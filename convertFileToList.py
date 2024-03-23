@@ -107,7 +107,8 @@ def convertFileToList(file: ExcelFile) -> list[Data_fill]:
                 or "scrum activity" in issue_summary.lower()
                 or "discussion" in issue_summary.lower()
                 or "คุย" in issue_summary.lower()
-                or (parent_summary == "Meeting not related to software development" and comment == "Internal ATS Activity")):
+                or (parent_summary == "Meeting not related to software development" 
+                    and comment == "Internal ATS Activity")):
                 task = "Other"
             elif ("consult / support" in parent_summary.lower()
                 or issue_summary.lower().startswith("support")):
@@ -116,7 +117,8 @@ def convertFileToList(file: ExcelFile) -> list[Data_fill]:
                 task = defaultData.default_task
 
             if (task == "Leave" 
-                or (parent_summary == "Meeting not related to software development" and comment == "Internal ATS Activity")) : 
+                or (parent_summary == "Meeting not related to software development" 
+                    and comment == "Internal ATS Activity")) : 
                 billType = "Non-Billable"
             elif (comment.startswith("OT")) :
                 billType = "Overtime"

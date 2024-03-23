@@ -53,7 +53,7 @@ class Data_fill:
         else :
             return "cphContent_rdoPopBillType_0"  # Regular
 
-    def as_dict(self) :
+    def as_dict(self) -> dict :
         return {
             "Datetime": self.filldatetime.strftime(defaultData.df_string),
             "Customer": self.customer,
