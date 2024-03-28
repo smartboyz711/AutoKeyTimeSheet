@@ -213,7 +213,7 @@ def submit_timeSheet(driver: WebDriver):
 
 
 def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> list[Data_fill]:
-    prev_datetime: date = date.min
+    #prev_datetime: date = date.min
     for data_fill in data_fill_list:
         if (not data_fill.statusMessage):
             try:
