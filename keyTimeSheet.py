@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from dataFillClass import Data_fill
 import defaultData
 
+list_deleted_time_date : list[str] = []
 
 def get_driver() -> WebDriver:
     # set option to make browsing easier
@@ -106,13 +107,15 @@ def find_fillDataDate(driver: WebDriver, data_fill: Data_fill):
             continue
 
 
-def delete_allTaskData(driver: WebDriver):
+def delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
+    date_time_str = data_fill.filldatetime.strftime(defaultData.df_string)
     try:
         driver.find_element(By.ID, value="cphContent_DeleteAll")
     except NoSuchElementException:
         return
 
-    if (float(driver.find_element(By.ID, value="totalHours").text) > 0):
+    if ((float(driver.find_element(By.ID, value="totalHours").text) > 0)
+        and (date_time_str not in list_deleted_time_date)):
         driver.find_element(By.ID, value="cphContent_DeleteAll").click()
         WebDriverWait(driver, timeout=defaultData.time_out).until(
             EC.presence_of_element_located((By.ID, "dialog-confirm-delete")))
@@ -122,6 +125,9 @@ def delete_allTaskData(driver: WebDriver):
             EC.invisibility_of_element_located((By.ID, "dialog-confirm-delete")))
         WebDriverWait(driver, timeout=defaultData.time_out).until(
             EC.invisibility_of_element_located((By.ID, "cphContent_DeleteAll")))
+        WebDriverWait(driver, timeout=defaultData.time_out).until(
+            EC.element_to_be_clickable((By.ID, "cphContent_addTimeEntry")))
+        list_deleted_time_date.append(date_time_str)
 
 
 def fill_taskData(driver: WebDriver, data_fill: Data_fill):
@@ -166,9 +172,9 @@ def fill_taskData(driver: WebDriver, data_fill: Data_fill):
     pnlAddEditTimelist.find_element(
         By.ID, value="cphContent_rdlInternal2").click()
     pnlAddEditTimelist.find_element(By.ID, value="cphContent_txtInternalDescription").send_keys(
-        data_fill.description.__str__())
+        str(data_fill.description))
     driver.find_element(
-        By.XPATH, value="//span[contains(.,'Save')]").click()  # save
+        By.XPATH, value="//span[contains(.,'Save')]").click()  #save
     WebDriverWait(driver, timeout=defaultData.time_out).until(
         EC.invisibility_of_element_located((By.ID, "cphContent_pnlAddEditTimelist")))
 
@@ -213,17 +219,15 @@ def submit_timeSheet(driver: WebDriver):
 
 
 def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> list[Data_fill]:
-    #prev_datetime: date = date.min
     for data_fill in data_fill_list:
         if (not data_fill.statusMessage):
             try:
                 find_fillDataDate(driver, data_fill)
-                # if(prev_datetime != data_fill.filldatetime.date()) :
-                #    delete_allTaskData(driver)
-                #    prev_datetime = data_fill.filldatetime.date()
+                delete_allTaskData(driver,data_fill)
                 fill_taskData(driver, data_fill)
             except Exception as e:
                 data_fill.statusMessage = str(e)
+    list_deleted_time_date.clear()
     return data_fill_list
 
 
@@ -233,6 +237,5 @@ def main_submitTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> list[
             find_fillDataDate(driver, data_fill)
             submit_timeSheet(driver)
         except Exception as e:
-            data_fill.statusMessage = f"{
-                data_fill.statusMessage} | Submit Error : {str(e)}"
+            data_fill.statusMessage = f"{data_fill.statusMessage} | Submit Error : {str(e)}"
     return data_fill_list
