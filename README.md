@@ -10,7 +10,9 @@ Download python จาก https://www.python.org/
 
 เพื่อ install package ที่ต้องใช้ในการ Run Project นี้
 
-# กรอกค่าต่อไปนี้ที่ไฟล์ main.py และ run main.py เพื่อรัน Script
+# วิธีใช้งาน Script
+
+กรอกค่าต่อไปนี้ที่ไฟล์ main.py และ run main.py เพื่อรัน Script
 
 email_jira_clockwork = "xxxx49@postbox.in.th" (Email @postbox.in.th)
 
