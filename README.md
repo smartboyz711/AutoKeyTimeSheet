@@ -1,4 +1,5 @@
-Auto ket Time Sheet Aware 
+# Auto ket Time Sheet Aware 
+
 by Theedanai Poomilamnao 18/02/2024
 
 Download python จาก https://www.python.org/ 
@@ -9,7 +10,7 @@ Download python จาก https://www.python.org/
 
 เพื่อ install package ที่ต้องใช้ในการ Run Project นี้
 
-กรอกค่าต่อไปนี้ที่ไฟล์ main.py และ run main.py เพื่อรัน Scirpt
+# กรอกค่าต่อไปนี้ที่ไฟล์ main.py และ run main.py เพื่อรัน Scirpt
 
 email_jira_clockwork = "xxxx49@postbox.in.th" (Email @postbox.in.th)
 
