@@ -10,14 +10,13 @@ Download python จาก https://www.python.org/
 เพื่อ install package ที่ต้องใช้ในการ Run Project นี้
 
 กรอกค่าต่อไปนี้ที่ไฟล์ main.py และ run main.py เพื่อรัน Scirpt
-# input for jira clock work
+
 email_jira_clockwork = "xxxx49@postbox.in.th" (Email @postbox.in.th)
 api_token = "" (token จาก Jira)
 starting_at_str = "18/03/2024" 
 ending_at_str = "30/03/2024"
 
-# input user password aware
-username_aware = 'thxxdxnxi.x'(Email @aware.co.th)
+username_aware = 'thxxdxnxi.x' (Email user Aware)
 password_aware = ''
 
 
