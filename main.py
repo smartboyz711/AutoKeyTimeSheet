@@ -21,8 +21,8 @@ def main():
             ending_at_str = "30/03/2024"
 
             # input user password aware
-            username_aware = 'theedanai.p'
-            password_aware = '2024@TON#03'
+            username_aware = ""
+            password_aware = ""
 
             starting_at = datetime.strptime(
                 starting_at_str, defaultData.df_string)
