@@ -23,20 +23,20 @@ class Jira_Clockwork:
 def api_jira_clockwork(token: str,
                        starting_at: datetime,
                        ending_at: datetime,
-                       user_query: str
+                       list_user_query: list[str]
                        ) -> list[Jira_Clockwork]:
 
     list_jira_Clockwork: list[Jira_Clockwork] = []
     jira_Clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
 
-    if (token and starting_at and ending_at and user_query):
+    if (token and starting_at and ending_at and len(list_user_query) > 0):
         headers_api = {
             "Authorization": token
         }
         criteria_data = {
             "starting_at": starting_at.strftime("%Y-%m-%d"),
             "ending_at": ending_at.strftime("%Y-%m-%d"),
-            "user_query": user_query
+            "user_query[]": list_user_query
         }
         try:
             response = requests.get(url=jira_Clockwork_url,
