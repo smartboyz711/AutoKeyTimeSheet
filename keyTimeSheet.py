@@ -53,7 +53,7 @@ def login_timeEntry(driver: WebDriver, username: str, password: str):
         EC.presence_of_element_located((By.ID, "cphContent_lblDateShow")))
 
 
-def find_fillDataDate(driver: WebDriver, data_fill: Data_fill):
+def __find_fillDataDate(driver: WebDriver, data_fill: Data_fill):
     while True:
         # detect date in Calender
         filldatetime = data_fill.filldatetime
@@ -107,7 +107,7 @@ def find_fillDataDate(driver: WebDriver, data_fill: Data_fill):
             continue
 
 
-def delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
+def __delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
     date_time_str = data_fill.filldatetime.strftime(defaultData.df_string)
     try:
         driver.find_element(By.ID, value="cphContent_DeleteAll")
@@ -130,7 +130,7 @@ def delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
         list_deleted_time_date.append(date_time_str)
 
 
-def fill_taskData(driver: WebDriver, data_fill: Data_fill):
+def __fill_taskData(driver: WebDriver, data_fill: Data_fill):
     try:
         driver.find_element(By.ID, value="cphContent_addTimeEntry")
     except NoSuchElementException:
@@ -179,7 +179,7 @@ def fill_taskData(driver: WebDriver, data_fill: Data_fill):
         EC.invisibility_of_element_located((By.ID, "cphContent_pnlAddEditTimelist")))
 
 
-def submit_timeSheet(driver: WebDriver):
+def __submit_timeSheet(driver: WebDriver):
     try:
         phContent_btnSubmitList = driver.find_element(
             By.ID, value="cphContent_btnSubmitList")
@@ -222,9 +222,9 @@ def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> lis
     for data_fill in data_fill_list:
         if (not data_fill.statusMessage):
             try:
-                find_fillDataDate(driver, data_fill)
-                delete_allTaskData(driver,data_fill)
-                fill_taskData(driver, data_fill)
+                __find_fillDataDate(driver, data_fill)
+                __delete_allTaskData(driver,data_fill)
+                __fill_taskData(driver, data_fill)
             except Exception as e:
                 data_fill.statusMessage = str(e)
     list_deleted_time_date.clear()
@@ -234,8 +234,8 @@ def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> lis
 def main_submitTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> list[Data_fill]:
     for data_fill in data_fill_list:
         try:
-            find_fillDataDate(driver, data_fill)
-            submit_timeSheet(driver)
+            __find_fillDataDate(driver, data_fill)
+            __submit_timeSheet(driver)
         except Exception as e:
             data_fill.statusMessage = f"{data_fill.statusMessage} | Submit Error : {str(e)}"
     return data_fill_list
