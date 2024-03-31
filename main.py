@@ -23,13 +23,15 @@ def main():
             # input user password aware
             username_aware = ""
             password_aware = ""
-
+                  
+            list_email_jira_clockwork : list[str] = []
+            list_email_jira_clockwork.append(email_jira_clockwork)
             starting_at = datetime.strptime(
                 starting_at_str, defaultData.df_string)
             ending_at = datetime.strptime(ending_at_str, defaultData.df_string)
 
             list_jira_Clockwork: list[Jira_Clockwork] = jcw.api_jira_clockwork(
-                token=api_token, starting_at=starting_at, ending_at=ending_at, user_query=email_jira_clockwork)
+                token=api_token, starting_at=starting_at, ending_at=ending_at, list_user_query=list_email_jira_clockwork)
             data_fill_list: list[Data_fill] = cjtl.convert_jira_to_list(list_jira_Clockwork)
 
             driver: WebDriver = kt.get_driver()
