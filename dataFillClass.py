@@ -1,48 +1,31 @@
 # Default data Aware Time sheet
+from dataclasses import dataclass
 from datetime import datetime
 import defaultData
 
-
+@dataclass()
 class Description:
-    def __init__(self, parent_key: str,
-                 parent_summary: str,
-                 issue_Type: str,
-                 issue_summary: str,
-                 comment: str
-                 ) -> None:
-
-        self.parent_key = parent_key
-        self.parent_summary = parent_summary
-        self.issue_Type = issue_Type
-        self.issue_summary = issue_summary
-        self.comment = comment
+    
+    parent_summary: str
+    issue_Type: str
+    issue_summary: str
+    comment: str
 
     def __str__(self) -> str:
         return f"{self.parent_summary}\n- {self.issue_Type} : {self.issue_summary}\n- Comment : {self.comment}"
 
-
+@dataclass()
 class Data_fill:
 
-    def __init__(self, customer: str,
-                 project: str,
-                 role: str,
-                 task: str,
-                 billType: str,
-                 filldatetime: datetime,
-                 hours: float,
-                 description: Description,
-                 statusMessage: str
-                 ) -> None:
-
-        self.customer = customer
-        self.project = project
-        self.role = role
-        self.task = task
-        self.billType = billType
-        self.filldatetime = filldatetime
-        self.hours = hours
-        self.description = description
-        self.statusMessage = statusMessage
+    customer: str
+    project: str
+    role: str
+    task: str
+    billType: str
+    filldatetime: datetime
+    hours: float
+    description: Description
+    statusMessage: str
 
     def get_id_billtype(self) -> str:
         if (self.billType == "Regular"):

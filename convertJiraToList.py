@@ -58,7 +58,6 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
                 billType = "Regular"
 
             description = Description(
-                parent_key=jitaClockwork.parent_key,
                 parent_summary=jitaClockwork.parent_summary,
                 issue_Type=jitaClockwork.issue_type,
                 issue_summary=jitaClockwork.issue_summary,
