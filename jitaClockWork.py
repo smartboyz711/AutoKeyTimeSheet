@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 import requests
 
@@ -19,6 +19,9 @@ class Jira_Clockwork:
     comment: str
     timeSpentSeconds: int
     statusMessage: str = ""
+    
+    def as_dict(self):
+        return {k : v for k, v in asdict(self).items()}
 
 def api_jira_clockwork(token: str,
                        starting_at: datetime,

@@ -5,3 +5,4 @@ dist/
 Report/
 test_api/
 *.xlsx
+*.ipynb
