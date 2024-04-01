@@ -52,7 +52,7 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
             # cal billType
             if (task == "Leave" or jitaClockwork.issue_type == "Activity"):
                 billType = "Non-Billable"
-            elif (jitaClockwork.comment.startswith("OT")):
+            elif (jitaClockwork.comment.startswith("OT") and jitaClockwork.issue_type == "Sub-task"):
                 billType = "Overtime"
             else:
                 billType = "Regular"
