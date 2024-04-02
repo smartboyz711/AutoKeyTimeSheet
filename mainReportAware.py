@@ -5,29 +5,25 @@ import defaultData
 import pandas as pd
 import jitaClockWork as jcw
 from jitaClockWork import Jira_Clockwork
+import input_ReportAware as irt
 
 def main():
     try:
 
         # input for jira clock work
-        api_token = ""
-        starting_at_str = "18/03/2024"
-        ending_at_str = "30/03/2024"
+        api_token = irt.api_token
+        starting_at_str = irt.starting_at_str
+        ending_at_str = irt.ending_at_str
+        List_email: list[str] = irt.List_email
 
-        List_email: list[str] = [
-            "XXX@postbox.in.th",
-            "XXX@postbox.in.th",
-            "XXXX@postbox.in.th"
-        ]
-
+        # begin #
         starting_at = datetime.strptime(starting_at_str, defaultData.df_string)
         ending_at = datetime.strptime(ending_at_str, defaultData.df_string)
 
         list_jira_Clockwork: list[Jira_Clockwork] = jcw.api_jira_clockwork(
             token=api_token, starting_at=starting_at, ending_at=ending_at, list_user_query=List_email)
 
-        df_jira_Clockwork = pd.DataFrame(
-            [x.as_dict() for x in list_jira_Clockwork])
+        df_jira_Clockwork = pd.DataFrame([x.as_dict() for x in list_jira_Clockwork])
         
         #drop field statusMessage
         df_jira_Clockwork = df_jira_Clockwork.drop(columns=["statusMessage"])
@@ -49,13 +45,14 @@ def main():
         df_summary["time_ot"] = df_summary.loc[(df_summary["issue_type"] == "Sub-task") & 
                                                (df_summary["comment"].str.startswith('OT'))]["timeSpentSeconds"]
 
-        #gruop by result
+        #group by result
         df_result = df_summary.groupby(["author_display_name", "author_emailAddress"], dropna=False)["timeSpentSeconds"].sum().reset_index(name="total_time")
         df_result["total_time_hours"] = df_result["total_time"] / 3600
         df_result["total_leave_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_leave"].sum().reset_index(name="total_leave")["total_leave"] / 3600
         df_result["total_activity_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_activity"].sum().reset_index(name="total_activity")["total_activity"] / 3600
         df_result["total_ot_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
-        df_result["total_work_time_hours"] = df_result["total_time_hours"] - df_result["total_leave_time_hours"] - df_result["total_activity_time_hours"]
+        df_result["total_work_time_hours"] = df_result["total_time_hours"] - df_result["total_leave_time_hours"] - df_result["total_activity_time_hours"] - df_result["total_ot_time_hours"] 
+        df_result["total_normal_time_hours"] = df_result["total_time_hours"] - df_result["total_ot_time_hours"]
         
         # gen report
         start_time = datetime.now()
@@ -80,6 +77,3 @@ def main():
     except Exception as e:
         print("An error occurred When gen report : "+str(e))
 
-
-if __name__ == "__main__":
-    main()
