@@ -27,6 +27,8 @@ username_aware = 'thxxdxnxi.x' (Email user Aware)
 password_aware = ''
 
 # วิธีใช้งาน Script Export Time Sheet from jira
+
+กรอกค่าต่อไปนี้ที่ไฟล์ input_ReportAware.py และ run input_ReportAware.py เพื่อรัน Script
  
 api_token = "" (token จาก Jira)
 
