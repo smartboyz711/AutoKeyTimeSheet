@@ -20,7 +20,7 @@ class Jira_Clockwork:
     timeSpentSeconds: int
     statusMessage: str = ""
     
-    def as_dict(self):
+    def as_dict(self) -> dict :
         return {k : v for k, v in asdict(self).items()}
 
 def api_jira_clockwork(token: str,
