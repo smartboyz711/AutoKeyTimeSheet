@@ -47,7 +47,7 @@ def api_jira_clockwork(token: str,
                                     data=criteria_data,
                                     timeout=30)
 
-            if (response.status_code == 200):
+            if (response.status_code == 200 and len(response.json()) > 0):
                 for data in response.json():
                     author_display_name = data["author"]["displayName"]
                     author_emailAddress = data["author"]["emailAddress"]
