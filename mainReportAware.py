@@ -26,33 +26,31 @@ def main():
         df_jira_Clockwork = pd.DataFrame([x.as_dict() for x in list_jira_Clockwork])
         
         #drop field statusMessage
-        df_jira_Clockwork = df_jira_Clockwork.drop(columns=["statusMessage"])
+        df_jira_Clockwork =  df_jira_Clockwork.drop(columns=["statusMessage"])
         
-        #new df summary
-        df_summary = df_jira_Clockwork
-        
-        df_summary["started_dt"] = df_summary["started_dt"].dt.strftime(defaultData.df_string)
+        df_jira_Clockwork["started_dt"] = df_jira_Clockwork["started_dt"].dt.strftime(defaultData.df_string)
         
         #new field time_leave
-        df_summary["time_leave"] = df_summary.loc[(df_summary["issue_type"] == "Activity") &
-                                                  (df_summary["parent_summary"] == "All Leaves")]["timeSpentSeconds"] 
+        df_jira_Clockwork["time_leave"] = df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Activity") &
+                                                  (df_jira_Clockwork["parent_summary"] == "All Leaves")]["timeSpentSeconds"] 
         
         #new field time_activity
-        df_summary["time_activity"] =  df_summary.loc[(df_summary["issue_type"] == "Activity") &
-                                                      (df_summary["parent_summary"] != "All Leaves")]["timeSpentSeconds"] 
+        df_jira_Clockwork["time_activity"] =  df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Activity") &
+                                                      (df_jira_Clockwork["parent_summary"] != "All Leaves")]["timeSpentSeconds"] 
         
         #new field time_ot
-        df_summary["time_ot"] = df_summary.loc[(df_summary["issue_type"] == "Sub-task") & 
-                                               (df_summary["comment"].str.startswith('OT'))]["timeSpentSeconds"]
+        df_jira_Clockwork["time_ot"] = df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Sub-task") & 
+                                               (df_jira_Clockwork["comment"].str.startswith('OT'))]["timeSpentSeconds"]
 
         #group by result
-        df_result = df_summary.groupby(["author_display_name", "author_emailAddress"], dropna=False)["timeSpentSeconds"].sum().reset_index(name="total_time")
-        df_result["total_time_hours"] = df_result["total_time"] / 3600
-        df_result["total_leave_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_leave"].sum().reset_index(name="total_leave")["total_leave"] / 3600
-        df_result["total_activity_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_activity"].sum().reset_index(name="total_activity")["total_activity"] / 3600
-        df_result["total_ot_time_hours"] = df_summary.groupby(["author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
-        df_result["total_work_time_hours"] = df_result["total_time_hours"] - df_result["total_leave_time_hours"] - df_result["total_activity_time_hours"] - df_result["total_ot_time_hours"] 
-        df_result["total_normal_time_hours"] = df_result["total_time_hours"] - df_result["total_ot_time_hours"]
+        df_summary = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["timeSpentSeconds"].sum().reset_index(name="total_time")
+        df_summary["total_time_hours"] = df_summary["total_time"] / 3600
+        df_summary["total_leave_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_leave"].sum().reset_index(name="total_leave")["total_leave"] / 3600
+        df_summary["total_activity_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_activity"].sum().reset_index(name="total_activity")["total_activity"] / 3600
+        df_summary["total_ot_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
+        df_summary["total_work_time_hours"] = df_summary["total_time_hours"] - df_summary["total_leave_time_hours"] - df_summary["total_activity_time_hours"] - df_summary["total_ot_time_hours"] 
+        df_summary["total_normal_time_hours"] = df_summary["total_time_hours"] - df_summary["total_ot_time_hours"]
+        df_summary = df_summary.drop(columns=["total_time"])
         
         # gen report
         start_time = datetime.now()
@@ -70,8 +68,8 @@ def main():
                 pass
 
         with pd.ExcelWriter(outputdir) as writer:
-            df_summary.to_excel(writer, sheet_name="jira time sheet", index=False)
-            df_result.to_excel(writer, sheet_name="summary time sheet", index=False)
+            df_jira_Clockwork.to_excel(writer, sheet_name="jira time sheet", index=False)
+            df_summary.to_excel(writer, sheet_name="summary time sheet", index=False)
             
 
     except Exception as e:
