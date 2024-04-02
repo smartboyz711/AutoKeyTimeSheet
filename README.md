@@ -26,7 +26,9 @@ username_aware = 'thxxdxnxi.x' (Email user Aware)
 
 password_aware = ''
 
-# วิธีใช้งาน Script Export Time Sheet from jira
+ไฟล์ Report auto time sheet อยู่ที่ folder report/ ชื่อไฟล์ขึ้นต้นด้วย Aware_time_sheet_report_XXXX.xlsx
+
+# วิธีใช้งาน Script Export Report time sheet from jira
 
 กรอกค่าต่อไปนี้ที่ไฟล์ input_ReportAware.py และ run input_ReportAware.py เพื่อรัน Script
  
@@ -43,6 +45,8 @@ List_email: list[str] = [
     "XXXX49@postbox.in.th",
     "XXXX49@postbox.in.th"
 ] 
+
+ไฟล์ Report jira time sheet อยู่ที่ folder report/ ชื่อไฟล์ขึ้นต้นด้วย jira_summary_timeSheet_XXXX.xlsx
 
 
 
