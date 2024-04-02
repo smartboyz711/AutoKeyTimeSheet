@@ -4,7 +4,7 @@ from pandas import ExcelFile
 import pandas as pd
 from dataFillClass import Data_fill
 from dataFillClass import Description
-import defaultData
+import input_autoTimeSheet as iat
 from jitaClockWork import Jira_Clockwork
 
 
@@ -30,9 +30,9 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
     if (len(list_jitaClockwork) > 0):
         for jitaClockwork in list_jitaClockwork:
             hours = seconds_to_timeFloat(jitaClockwork.timeSpentSeconds)
-            customer = defaultData.default_customer
-            project = defaultData.default_project
-            role = defaultData.default_role
+            customer = iat.default_customer
+            project = iat.default_project
+            role = iat.default_role
             task = ""
             billType = ""
 
@@ -48,7 +48,7 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
                   or jitaClockwork.issue_summary.lower().startswith("support")):
                 task = "Support"
             else:
-                task = defaultData.default_task
+                task = iat.default_task
             # cal billType
             if (task == "Leave" or jitaClockwork.issue_type == "Activity"):
                 billType = "Non-Billable"
