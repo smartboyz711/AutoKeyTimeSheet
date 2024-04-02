@@ -39,6 +39,7 @@ Email user jira @postbox.in.th ที่จ้องการ export time sheet
 List_email: list[str] = [
     "XXXX49@postbox.in.th",
     "XXXX49@postbox.in.th",
+    "XXXX49@postbox.in.th"
 ] 
 
 
