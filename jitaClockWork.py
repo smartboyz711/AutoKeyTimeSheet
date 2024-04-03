@@ -45,7 +45,7 @@ def api_jira_clockwork(token: str,
             response = requests.get(url=jira_Clockwork_url,
                                     headers=headers_api,
                                     data=criteria_data,
-                                    timeout=30)
+                                    timeout=60)
 
             if (response.status_code == 200 and len(response.json()) > 0):
                 for data in response.json():

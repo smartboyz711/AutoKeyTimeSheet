@@ -38,7 +38,7 @@ starting_at_str = "01/03/2024"
 
 ending_at_str = "30/03/2024"
 
-Email user jira @postbox.in.th ที่จ้องการ export time sheet
+Email user jira @postbox.in.th ที่ต้องการ export time sheet
 
 List_email: list[str] = [
     "XXXX49@postbox.in.th",
