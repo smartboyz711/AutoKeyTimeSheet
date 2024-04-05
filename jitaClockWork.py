@@ -17,6 +17,7 @@ class Jira_Clockwork:
     issue_type: str
     issue_summary: str
     comment: str
+    timeSpent : str
     timeSpentSeconds: int
     statusMessage: str = ""
     
@@ -58,6 +59,7 @@ def api_jira_clockwork(token: str,
                     issue_key = data["issue"]["key"]
                     issue_type = data["issue"]["fields"]["issuetype"]["name"]
                     issue_summary = data["issue"]["fields"]["summary"]
+                    timeSpent = data["timeSpent"]
                     timeSpentSeconds = data["timeSpentSeconds"]
                     try:
                         started_dt = datetime.fromisoformat(
@@ -81,6 +83,7 @@ def api_jira_clockwork(token: str,
                         issue_type=issue_type,
                         issue_summary=issue_summary,
                         comment=comment,
+                        timeSpent=timeSpent,
                         timeSpentSeconds=timeSpentSeconds,
                     )
                     list_jira_Clockwork.append(jira_Clockwork)
