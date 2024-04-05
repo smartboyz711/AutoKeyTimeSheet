@@ -25,9 +25,6 @@ def main():
 
         df_jira_Clockwork = pd.DataFrame([x.as_dict() for x in list_jira_Clockwork])
         
-        #drop field statusMessage
-        df_jira_Clockwork =  df_jira_Clockwork.drop(columns=["statusMessage"])
-        
         df_jira_Clockwork["started_dt"] = df_jira_Clockwork["started_dt"].dt.strftime(defaultData.df_string)
         
         #new field time_leave
@@ -48,9 +45,12 @@ def main():
         df_summary["total_leave_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_leave"].sum().reset_index(name="total_leave")["total_leave"] / 3600
         df_summary["total_activity_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_activity"].sum().reset_index(name="total_activity")["total_activity"] / 3600
         df_summary["total_ot_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
-        df_summary["total_work_time_hours"] = df_summary["total_time_hours"] - df_summary["total_leave_time_hours"] - df_summary["total_activity_time_hours"] - df_summary["total_ot_time_hours"] 
+        df_summary["total_work_time_hours"] = df_summary["total_time_hours"] - df_summary["total_leave_time_hours"] - df_summary["total_activity_time_hours"]
         df_summary["total_normal_time_hours"] = df_summary["total_time_hours"] - df_summary["total_ot_time_hours"]
         df_summary = df_summary.drop(columns=["total_time"])
+        
+        #drop field statusMessage
+        df_jira_Clockwork =  df_jira_Clockwork.drop(columns=["statusMessage"])
         
         # gen report
         start_time = datetime.now()
