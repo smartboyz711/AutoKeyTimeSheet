@@ -80,6 +80,7 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
             data_fill_list.append(data_fill)
     return data_fill_list
 
+
 def convert_excel_to_list(file: ExcelFile) -> list[Data_fill]:
     data_fill_list: list[Data_fill] = []
     list_jitaClockwork: list[Jira_Clockwork] = []
@@ -164,6 +165,7 @@ def convert_excel_to_list(file: ExcelFile) -> list[Data_fill]:
                 issue_type=issue_type,
                 issue_summary=issue_summary,
                 comment=comment,
+                timeSpent="",
                 timeSpentSeconds=timeSpentSeconds,
                 statusMessage=statusMessage
             )
