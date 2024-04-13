@@ -14,6 +14,7 @@ from dataFillClass import Data_fill
 import defaultData
 
 list_deleted_time_date : list[str] = []
+list_tasked_time_date : list[str] = []
 
 def get_driver() -> WebDriver:
     # set option to make browsing easier
@@ -115,7 +116,8 @@ def __delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
         return
 
     if ((float(driver.find_element(By.ID, value="totalHours").text) > 0)
-        and (date_time_str not in list_deleted_time_date)):
+        and (date_time_str not in list_deleted_time_date)
+        and (date_time_str not in list_tasked_time_date)):
         driver.find_element(By.ID, value="cphContent_DeleteAll").click()
         WebDriverWait(driver, timeout=defaultData.time_out).until(
             EC.presence_of_element_located((By.ID, "dialog-confirm-delete")))
@@ -127,6 +129,7 @@ def __delete_allTaskData(driver: WebDriver , data_fill : Data_fill):
             EC.invisibility_of_element_located((By.ID, "cphContent_DeleteAll")))
         WebDriverWait(driver, timeout=defaultData.time_out).until(
             EC.element_to_be_clickable((By.ID, "cphContent_addTimeEntry")))
+        #add time that already deleted in time sheet
         list_deleted_time_date.append(date_time_str)
 
 
@@ -177,7 +180,9 @@ def __fill_taskData(driver: WebDriver, data_fill: Data_fill):
         By.XPATH, value="//span[contains(.,'Save')]").click()  #save
     WebDriverWait(driver, timeout=defaultData.time_out).until(
         EC.invisibility_of_element_located((By.ID, "cphContent_pnlAddEditTimelist")))
-
+    date_time_str = data_fill.filldatetime.strftime(defaultData.df_string)
+    #add time that already add to time sheet
+    list_tasked_time_date.append(date_time_str)
 
 def __submit_timeSheet(driver: WebDriver):
     try:
@@ -228,6 +233,7 @@ def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> lis
             except Exception as e:
                 data_fill.statusMessage = str(e)
     list_deleted_time_date.clear()
+    list_tasked_time_date.clear()
     return data_fill_list
 
 

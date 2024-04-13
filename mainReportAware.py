@@ -55,8 +55,7 @@ def main():
         # gen report
         start_time = datetime.now()
         date_today = start_time.strftime("%d%m%Y_%H%M%S")
-        fileName_report = f"jira_summary_timeSheet_{starting_at.strftime(
-            "%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
+        fileName_report = f"jira_summary_timeSheet_{starting_at.strftime("%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
         pathName = "Report"
         outputdir = "{}/{}".format(pathName, fileName_report+".xlsx")
         # Create Path
