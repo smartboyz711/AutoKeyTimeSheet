@@ -33,33 +33,35 @@ def main():
 
         list_jira_Clockwork: list[Jira_Clockwork] = jcw.api_jira_clockwork(
             token=api_token, starting_at=starting_at, ending_at=ending_at, list_user_query=list_email_jira_clockwork)
-        data_fill_list: list[Data_fill] = cjtl.convert_jira_to_list(list_jira_Clockwork)
+        
+        if(len(list_jira_Clockwork) > 0) :
+            
+            data_fill_list: list[Data_fill] = cjtl.convert_jira_to_list(list_jira_Clockwork)
+            driver: WebDriver = kt.get_driver()
+            kt.login_timeEntry(driver, username_aware, password_aware)
+            data_fill_list = kt.main_fillDataTask(driver, data_fill_list)
+            
+            df_data_fill = pd.DataFrame([x.as_dict() for x in data_fill_list])
+            
+            #gen report
+            start_time = datetime.now()
+            date_today = start_time.strftime("%d%m%Y_%H%M%S")
+            outputdir = ""
+            fileName_report = f"Aware_time_sheet_report_{date_today}"
+            pathName = "Report"
+            # Create Path
+            try:
+                os.makedirs(pathName)
+            except OSError as e:
+                # If directory is exists use this directory
+                if e.errno == errno.EEXIST:
+                    pass
 
-        driver: WebDriver = kt.get_driver()
-        kt.login_timeEntry(driver, username_aware, password_aware)
-        data_fill_list = kt.main_fillDataTask(driver, data_fill_list)
-        
-        df_data_fill = pd.DataFrame([x.as_dict() for x in data_fill_list])
-        
-        #gen report
-        start_time = datetime.now()
-        date_today = start_time.strftime("%d%m%Y_%H%M%S")
-        outputdir = ""
-        fileName_report = f"Aware_time_sheet_report_{date_today}"
-        pathName = "Report"
-        # Create Path
-        try:
-            os.makedirs(pathName)
-        except OSError as e:
-            # If directory is exists use this directory
-            if e.errno == errno.EEXIST:
-                pass
-
-        outputdir = "{}/{}".format(pathName, fileName_report+".xlsx")
-        df_data_fill.to_excel(excel_writer=outputdir, index=False)
-        
-        print("fill time Sheet Success you can check result ==> "+outputdir)
-        driver.close()
+            outputdir = "{}/{}".format(pathName, fileName_report+".xlsx")
+            df_data_fill.to_excel(excel_writer=outputdir, index=False)
+            
+            print("fill time Sheet Success you can check result ==> "+outputdir)
+            driver.close()
         
     except Exception as e:
         print("An error occurred Cannot Key time sheet. : "+str(e))
