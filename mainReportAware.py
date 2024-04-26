@@ -33,7 +33,7 @@ def main():
         
         #new field time_activity
         df_jira_Clockwork["time_activity"] =  df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Activity") &
-                                                      (df_jira_Clockwork["parent_summary"] != "All Leaves")]["timeSpentSeconds"]
+                                                      (df_jira_Clockwork["issue_summary"] == "ATS Activity")]["timeSpentSeconds"]
         
         #new field time_ot
         df_jira_Clockwork["time_ot"] = df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Sub-task") & 
