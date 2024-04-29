@@ -62,10 +62,10 @@ def api_jira_clockwork(token: str,
                     timeSpent = data["timeSpent"]
                     timeSpentSeconds = data["timeSpentSeconds"]
                     try:
-                        started_dt = datetime.fromisoformat(
+                        started_dt : datetime = datetime.fromisoformat(
                             data["started"]).replace(tzinfo=None)
                     except Exception:
-                        started_dt = datetime.now()
+                        started_dt = datetime.min
                     try:
                         comment = data["comment"]
                     except Exception:

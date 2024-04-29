@@ -225,7 +225,7 @@ def __submit_timeSheet(driver: WebDriver):
 
 def main_fillDataTask(driver: WebDriver, data_fill_list: list[Data_fill]) -> list[Data_fill]:
     for data_fill in data_fill_list:
-        if (not data_fill.statusMessage):
+        if (not data_fill.statusMessage and data_fill.filldatetime > datetime.min):
             try:
                 __find_fillDataDate(driver, data_fill)
                 __delete_allTaskData(driver,data_fill)
