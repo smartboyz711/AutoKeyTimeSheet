@@ -43,7 +43,8 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
                   or "scrum activity" in jitaClockwork.issue_summary.lower()
                   or "discussion" in jitaClockwork.issue_summary.lower()
                   or "คุย" in jitaClockwork.issue_summary.lower()
-                  or "หารือ" in jitaClockwork.issue_summary.lower()):
+                  or "หารือ" in jitaClockwork.issue_summary.lower()
+                  or jitaClockwork.issue_type == "Activity"):
                 task = "Other"
             elif ("consult / support" in jitaClockwork.parent_summary.lower()
                   or jitaClockwork.issue_summary.lower().startswith("support")):
