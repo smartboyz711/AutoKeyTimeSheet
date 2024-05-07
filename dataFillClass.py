@@ -10,10 +10,13 @@ class Description:
     issue_Type: str
     issue_summary: str
     comment: str
+    billType: str
 
-    def __str__(self) -> str:
-        return f"{self.parent_summary}\n- {self.issue_Type} : {self.issue_summary}\n- Comment : {self.comment}"
-
+    def description_str(self) -> str:
+        if(self.billType == "Overtime") :
+            return self.comment
+        else :
+            return f"{self.parent_summary}\n- {self.issue_Type} : {self.issue_summary}\n- Comment : {self.comment}"
 @dataclass()
 class Data_fill:
 

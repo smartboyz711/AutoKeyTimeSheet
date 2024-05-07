@@ -174,8 +174,7 @@ def __fill_taskData(driver: WebDriver, data_fill: Data_fill):
     #    By.ID, value="cphContent_ddlInternalDescription")).select_by_visible_text(data_fill.task)
     pnlAddEditTimelist.find_element(
         By.ID, value="cphContent_rdlInternal2").click()
-    pnlAddEditTimelist.find_element(By.ID, value="cphContent_txtInternalDescription").send_keys(
-        str(data_fill.description))
+    pnlAddEditTimelist.find_element(By.ID, value="cphContent_txtInternalDescription").send_keys(data_fill.description.description_str())
     driver.find_element(
         By.XPATH, value="//span[contains(.,'Save')]").click()  #save
     WebDriverWait(driver, timeout=defaultData.time_out).until(
