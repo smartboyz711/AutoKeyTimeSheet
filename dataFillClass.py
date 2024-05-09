@@ -28,7 +28,7 @@ class Data_fill:
     filldatetime: datetime
     hours: float
     description: Description
-    statusMessage: str
+    statusMessage: str = ""
 
     def get_id_billtype(self) -> str:
         if (self.billType == "Regular"):

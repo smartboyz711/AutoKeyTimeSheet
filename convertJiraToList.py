@@ -75,8 +75,7 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
                 billType=billType,
                 filldatetime=jitaClockwork.started_dt,
                 hours=hours,
-                description=description,
-                statusMessage=jitaClockwork.statusMessage
+                description=description
             )
 
             data_fill_list.append(data_fill)

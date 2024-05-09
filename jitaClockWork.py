@@ -16,10 +16,9 @@ class Jira_Clockwork:
     issue_key: str
     issue_type: str
     issue_summary: str
-    comment: str
     timeSpent : str
     timeSpentSeconds: int
-    statusMessage: str = ""
+    comment: str = ""
     
     def as_dict(self) -> dict :
         return {k : v for k, v in asdict(self).items()}
