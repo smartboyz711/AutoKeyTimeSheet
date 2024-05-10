@@ -51,9 +51,6 @@ def main():
             df_summary["total_normal_time_hours"] = df_summary["total_time_hours"] - df_summary["total_ot_time_hours"]
             df_summary = df_summary.drop(columns=["total_time"])
             
-            #drop field statusMessage
-            df_jira_Clockwork =  df_jira_Clockwork.drop(columns=["statusMessage"])
-            
             # gen report
             start_time = datetime.now()
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
