@@ -46,10 +46,18 @@ def main():
             df_summary["total_time_hours"] = df_summary["total_time"] / 3600
             df_summary["total_leave_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_leave"].sum().reset_index(name="total_leave")["total_leave"] / 3600
             df_summary["total_activity_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_activity"].sum().reset_index(name="total_activity")["total_activity"] / 3600
-            df_summary["total_ot_time_hours"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
-            df_summary["total_work_time_hours"] = df_summary["total_time_hours"] - df_summary["total_leave_time_hours"] - df_summary["total_activity_time_hours"]
-            df_summary["total_normal_time_hours"] = df_summary["total_time_hours"] - df_summary["total_ot_time_hours"]
-            df_summary = df_summary.drop(columns=["total_time"])
+            df_summary["overtime_hour"] = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["time_ot"].sum().reset_index(name="total_ot")["total_ot"] / 3600
+            df_summary["overtime_day"] = df_summary["overtime_hour"] / 8
+            df_summary["ais_sff_hour"] = df_summary["total_time_hours"] - df_summary["total_leave_time_hours"] - df_summary["total_activity_time_hours"] - df_summary["overtime_hour"]
+            df_summary["ais_sff_day"] = df_summary["ais_sff_hour"] / 8
+            df_summary["non_billable_hour"] = df_summary["total_leave_time_hours"] + df_summary["total_activity_time_hours"]
+            df_summary["non_billable_day"] = df_summary["non_billable_hour"] / 8
+            df_summary["summary_billable_day"] = df_summary["ais_sff_day"] + df_summary["overtime_day"]
+            df_summary["working_days"] = (df_summary["total_time_hours"] - df_summary["overtime_hour"]) / 8
+            
+            #Set order of columns
+            df_summary = df_summary[["author_display_name","author_emailAddress","ais_sff_hour","ais_sff_day","overtime_hour",
+                                     "overtime_day","non_billable_hour","non_billable_day","summary_billable_day","working_days"]]
             
             # gen report
             start_time = datetime.now()
