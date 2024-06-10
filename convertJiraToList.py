@@ -1,7 +1,5 @@
 
 from datetime import datetime, timedelta
-from pandas import ExcelFile
-import pandas as pd
 from dataFillClass import Data_fill
 from dataFillClass import Description
 import input_autoTimeSheet as iat
@@ -37,7 +35,8 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
             billType = ""
 
             # cal task
-            if ("all leaves" in jitaClockwork.parent_summary.lower()):
+            if (jitaClockwork.parent_summary.lower() == "all leaves" 
+                and jitaClockwork.issue_type == "Activity") :
                 task = "Leave"
             elif ("meeting" in jitaClockwork.issue_summary.lower()
                   or "scrum activity" in jitaClockwork.issue_summary.lower()
