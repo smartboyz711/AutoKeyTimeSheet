@@ -1,8 +1,12 @@
+import asyncio
 from datetime import datetime
 import errno
 import os
+
+from numpy import append
 import defaultData
 import pandas as pd
+from pandas import DataFrame
 import jitaClockWork as jcw
 from jitaClockWork import Jira_Clockwork
 import input_ReportAware as irt
@@ -11,23 +15,32 @@ def main():
     try:
 
         # input for jira clock work
-        api_token = irt.api_token
         starting_at_str = irt.starting_at_str
         ending_at_str = irt.ending_at_str
-        List_email: list[str] = irt.List_email
+        List_email = irt.List_email
+        list_api_token = irt.list_api_token
 
         # begin #
         starting_at = datetime.strptime(starting_at_str, defaultData.df_string)
         ending_at = datetime.strptime(ending_at_str, defaultData.df_string)
 
-        list_jira_Clockwork: list[Jira_Clockwork] = jcw.api_jira_clockwork(
-            token=api_token, starting_at=starting_at, ending_at=ending_at, list_user_query=List_email)
+        list_jira_Clockwork : list[Jira_Clockwork] = []
         
-        if(len(list_jira_Clockwork) > 0) :
+        if(list_api_token) :
+            
+            list_jira_Clockwork = asyncio.run(jcw.api_jira_clockwork_async_all_token(
+                list_api_token, starting_at, ending_at, List_email))
+            
+        if(list_jira_Clockwork) :
 
             df_jira_Clockwork = pd.DataFrame([x.as_dict() for x in list_jira_Clockwork])
             
+            df_jira_Clockwork = df_jira_Clockwork.drop_duplicates()
+            
             df_jira_Clockwork["started_dt"] = df_jira_Clockwork["started_dt"].dt.strftime(defaultData.df_string)
+            
+            #new field timeSpentHours
+            df_jira_Clockwork["timeSpentHours"] = df_jira_Clockwork["timeSpentSeconds"] / 3600
             
             #new field time_leave
             df_jira_Clockwork["time_leave"] = df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Activity") &
@@ -40,7 +53,28 @@ def main():
             #new field time_ot
             df_jira_Clockwork["time_ot"] = df_jira_Clockwork.loc[(df_jira_Clockwork["issue_type"] == "Sub-task") & 
                                                 (df_jira_Clockwork["comment"].str.startswith('OT'))]["timeSpentSeconds"]
-
+            
+            df_jira_Clockwork = df_jira_Clockwork.sort_values(by=['author_display_name', 'started_dt'])
+            
+            #pivot table
+            df_pivot_table = pd.pivot_table(df_jira_Clockwork, values="timeSpentHours", 
+                                            index=['project_name','parent_summary','issue_summary','comment'],
+                                            columns=['author_display_name'], aggfunc="sum", fill_value=0)
+            
+            df_pivot_table = pd.DataFrame(df_pivot_table.to_records())
+            user_columns  = df_pivot_table.columns[4:] 
+            df_pivot_table["total_hours"] = df_pivot_table[user_columns].sum(axis=1)
+            
+            grand_total_row = {col: df_pivot_table[col].sum() for col in user_columns}
+            grand_total_row['project_name'] = ''
+            grand_total_row['parent_summary'] = ''
+            grand_total_row['issue_summary'] = ''
+            grand_total_row['comment'] = "Grand Total"
+            grand_total_row['total_hours'] = df_pivot_table["total_hours"].sum()
+            
+            grand_total_df = pd.DataFrame(grand_total_row, index=[0])
+            df_pivot_table_with_grand_total = pd.concat([df_pivot_table, grand_total_df], ignore_index=True)
+            
             #group by result
             df_summary = df_jira_Clockwork.groupby(["author_display_name", "author_emailAddress"], dropna=False)["timeSpentSeconds"].sum().reset_index(name="total_time")
             df_summary["total_time_hours"] = df_summary["total_time"] / 3600
@@ -57,7 +91,7 @@ def main():
             
             #Set order of columns
             df_summary = df_summary[["author_display_name","author_emailAddress","ais_sff_hour","ais_sff_day","overtime_hour",
-                                     "overtime_day","non_billable_hour","non_billable_day","summary_billable_day","working_days"]]
+                                    "overtime_day","non_billable_hour","non_billable_day","summary_billable_day","working_days"]]
             
             # gen report
             start_time = datetime.now()
@@ -75,9 +109,10 @@ def main():
 
             with pd.ExcelWriter(outputdir) as writer:
                 df_jira_Clockwork.to_excel(writer, sheet_name="jira time sheet", index=False)
+                df_pivot_table_with_grand_total.to_excel(writer, sheet_name="pivot time sheet", index=False)
                 df_summary.to_excel(writer, sheet_name="summary time sheet", index=False)
-            
+                
 
     except Exception as e:
-        print("An error occurred When gen report : "+str(e))
+        print("An error occurred When gen report : "+str(object=e))
 

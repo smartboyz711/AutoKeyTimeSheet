@@ -32,7 +32,7 @@ password_aware = ''
 
 กรอกค่าต่อไปนี้ที่ไฟล์ input_ReportAware.py และ run input_ReportAware.py เพื่อรัน Script
  
-api_token = "" (token จาก Jira)
+List_api_token = "" (token จาก Jira) รองรับหลาย token พร้อมกัน
 
 starting_at_str = "01/03/2024"
 
@@ -47,6 +47,3 @@ List_email: list[str] = [
 ] 
 
 ไฟล์ Report jira time sheet อยู่ที่ folder Report/ ชื่อไฟล์ขึ้นต้นด้วย jira_summary_timeSheet_XXXX.xlsx
-
-
-
