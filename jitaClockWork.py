@@ -87,7 +87,8 @@ def api_jira_clockwork(token: str,
                         timeSpentSeconds=timeSpentSeconds,
                     )
                     list_jira_Clockwork.append(jira_Clockwork)
-                    
+                list_jira_Clockwork = sorted(list_jira_Clockwork, key=lambda jira_Clockwork : (
+                    jira_Clockwork.author_display_name, jira_Clockwork.started_dt))
         except Exception as e:
             print(f"Error api jira clockwork : {e}")
 
