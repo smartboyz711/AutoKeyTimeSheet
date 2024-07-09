@@ -3,10 +3,8 @@ from datetime import datetime
 import errno
 import os
 
-from numpy import append
 import defaultData
 import pandas as pd
-from pandas import DataFrame
 import jitaClockWork as jcw
 from jitaClockWork import Jira_Clockwork
 import input_ReportAware as irt
@@ -65,6 +63,7 @@ def main():
             user_columns  = df_pivot_table.columns[4:] 
             df_pivot_table["total_hours"] = df_pivot_table[user_columns].sum(axis=1)
             
+            #grand total
             grand_total_row = {col: df_pivot_table[col].sum() for col in user_columns}
             grand_total_row['project_name'] = ''
             grand_total_row['parent_summary'] = ''
