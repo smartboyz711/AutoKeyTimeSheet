@@ -45,7 +45,7 @@ def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_
                 "meeting" in jitaClockwork.issue_summary.lower()
                 or "scrum activity" in jitaClockwork.issue_summary.lower()
                 or "discussion" in jitaClockwork.issue_summary.lower()
-                or "��ุย" in jitaClockwork.issue_summary.lower()
+                or "ประชุม" in jitaClockwork.issue_summary.lower()
                 or "หารือ" in jitaClockwork.issue_summary.lower()
                 or jitaClockwork.issue_type == "Activity"
             ):
