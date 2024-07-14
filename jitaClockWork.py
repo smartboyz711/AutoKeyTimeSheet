@@ -33,7 +33,7 @@ def api_jira_clockwork(token: str,
     list_jira_Clockwork: list[Jira_Clockwork] = []
     jira_Clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
 
-    if (token and starting_at and ending_at and len(list_user_query) > 0):
+    if (token and starting_at and ending_at and list_user_query):
         headers_api: dict[str, str] = {
             "Authorization": f"Token {token}"
         }
