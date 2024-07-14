@@ -2,7 +2,7 @@ import asyncio
 from dataclasses import asdict, dataclass
 from datetime import datetime
 import requests
-
+from requests import Response
 
 @dataclass
 class Jira_Clockwork:
@@ -34,8 +34,8 @@ def api_jira_clockwork(token: str,
     jira_Clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
 
     if (token and starting_at and ending_at and len(list_user_query) > 0):
-        headers_api = {
-            "Authorization": token
+        headers_api: dict[str, str] = {
+            "Authorization": f"Token {token}"
         }
         criteria_data = {
             "starting_at": starting_at.strftime("%Y-%m-%d"),
@@ -43,24 +43,24 @@ def api_jira_clockwork(token: str,
             "user_query[]": list_user_query
         }
         try:
-            response = requests.get(url=jira_Clockwork_url,
+            response: Response = requests.get(url=jira_Clockwork_url,
                                     headers=headers_api,
                                     data=criteria_data,
                                     timeout=60)
 
             if (response.status_code == 200 and len(response.json()) > 0):
                 for data in response.json():
-                    author_display_name = data["author"]["displayName"]
-                    author_emailAddress = data["author"]["emailAddress"]
-                    project_key = data["issue"]["fields"]["project"]["key"]
-                    project_name = data["issue"]["fields"]["project"]["name"]
-                    parent_key = data["issue"]["fields"]["parent"]["key"]
-                    parent_summary = data["issue"]["fields"]["parent"]["fields"]["summary"]
-                    issue_key = data["issue"]["key"]
-                    issue_type = data["issue"]["fields"]["issuetype"]["name"]
-                    issue_summary = data["issue"]["fields"]["summary"]
-                    timeSpent = data["timeSpent"]
-                    timeSpentSeconds = data["timeSpentSeconds"]
+                    author_display_name: str = data["author"]["displayName"]
+                    author_emailAddress: str = data["author"]["emailAddress"]
+                    project_key: str = data["issue"]["fields"]["project"]["key"]
+                    project_name: str = data["issue"]["fields"]["project"]["name"]
+                    parent_key: str = data["issue"]["fields"]["parent"]["key"]
+                    parent_summary: str = data["issue"]["fields"]["parent"]["fields"]["summary"]
+                    issue_key: str = data["issue"]["key"]
+                    issue_type: str = data["issue"]["fields"]["issuetype"]["name"]
+                    issue_summary: str = data["issue"]["fields"]["summary"]
+                    timeSpent: str = data["timeSpent"]
+                    timeSpentSeconds: int = data["timeSpentSeconds"]
                     try:
                         started_dt : datetime = datetime.fromisoformat(
                             data["started"]).replace(tzinfo=None)
@@ -76,12 +76,12 @@ def api_jira_clockwork(token: str,
                         author_emailAddress=author_emailAddress,
                         started_dt=started_dt,
                         project_key=project_key,
-                        project_name=project_name,
+                        project_name=project_name.strip(),
                         parent_key=parent_key,
-                        parent_summary=parent_summary,
+                        parent_summary=parent_summary.strip(),
                         issue_key=issue_key,
                         issue_type=issue_type,
-                        issue_summary=issue_summary,
+                        issue_summary=issue_summary.strip(),
                         comment=comment.strip(),
                         timeSpent=timeSpent,
                         timeSpentSeconds=timeSpentSeconds,
@@ -112,7 +112,7 @@ async def api_jira_clockwork_async_all_token (list_token: list[str],
     if list_token:
         tasks = [api_jira_clockwork_async(
             token, starting_at, ending_at, list_user_query) for token in list_token]
-        results = await asyncio.gather(*tasks)
+        results: list[list[Jira_Clockwork]] = await asyncio.gather(*tasks)
         
         for result in results:
             list_jira_Clockwork.extend(result)
