@@ -32,11 +32,14 @@ password_aware = ''
 
 กรอกค่าต่อไปนี้ที่ไฟล์ input_ReportAware.py และ run input_ReportAware.py เพื่อรัน Script
  
-List_api_token = "" (token จาก Jira) รองรับหลาย token พร้อมกัน
+List_api_token: list[str] = [ 
+    "", (token จาก Jira) รองรับหลาย token พร้อมกัน
+    "",
+] 
 
 starting_at_str = "01/03/2024"
 
-ending_at_str = "30/03/2024"
+ending_at_str = "30/03/2024"s
 
 Email user jira @postbox.in.th ที่ต้องการ export time sheet
 
