@@ -67,7 +67,7 @@ def api_jira_clockwork(token: str,
                     except Exception:
                         started_dt = datetime.min
                     try:
-                        comment = data["comment"]
+                        comment: str = data["comment"]
                     except Exception:
                         comment = ""
 
