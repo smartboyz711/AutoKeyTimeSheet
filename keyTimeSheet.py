@@ -9,29 +9,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
 from dataFillClass import Data_fill
 import defaultData
 
 list_deleted_time_date : list[str] = []
 list_tasked_time_date : list[str] = []
-
-def get_driver() -> WebDriver:
-    # set option to make browsing easier
-    option = webdriver.ChromeOptions()
-    # option.add_argument("disable-infobars")
-    option.add_argument("start-maximized")
-    # option.add_argument("disable-dev-shm-usage")
-    # option.add_argument("no-sandbox")
-    # option.add_experimental_option(
-    # name="excludeSwitches", value=["enable-automation"])
-    # option.add_argument("disable-blink-features=AutomationControlled")
-    driver = webdriver.Chrome(service=ChromeService(
-        ChromeDriverManager().install()), options=option)
-    driver.get("https://newtimesheet.aware.co.th/timesheet/Login.aspx")
-    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()))
+        
+def get_driver() -> webdriver.Chrome:
+    options = webdriver.ChromeOptions()
+    options.add_argument(argument="start-maximized")
+    # Initialize WebDriver
+    driver = WebDriver(service=ChromeService(),options=options)
+    driver.get(url="https://newtimesheet.aware.co.th/timesheet/Login.aspx")
     return driver
-
 
 def login_timeEntry(driver: WebDriver, username: str, password: str):
     WebDriverWait(driver, timeout=defaultData.time_out).until(
@@ -92,9 +82,9 @@ def __find_fillDataDate(driver: WebDriver, data_fill: Data_fill):
             # Check Same Date as last time
             if (filldatetime_str != current_date_str):
                 driver.find_element(By.ID, value=filldate).click()  # FRI
-            WebDriverWait(driver, timeout=defaultData.time_out).until(EC.text_to_be_present_in_element
-                                                                      ((By.ID, "cphContent_lblDateShow"),
-                                                                       filldatetime_str))  # Friday, October 14, 2022
+            WebDriverWait(driver, timeout=defaultData.time_out).until(method=EC.text_to_be_present_in_element
+                                                                        (locator=(By.ID, "cphContent_lblDateShow"),
+                                                                        text_=filldatetime_str))  # Friday, October 14, 2022
             break
         elif (filldatetime < monDateTime):
             driver.find_element(By.CLASS_NAME, value="previousWeek").click()
@@ -167,7 +157,7 @@ def __fill_taskData(driver: WebDriver, data_fill: Data_fill):
     pnlAddEditTimelist.find_element(
         By.ID, value=data_fill.get_id_billtype()).click()
     pnlAddEditTimelist.find_element(
-        By.ID, value="cphContent_txtHours").send_keys(data_fill.hours)
+        By.ID, value="cphContent_txtHours").send_keys(str(data_fill.hours))
     # pnlAddEditTimelist.find_element(
     #    By.ID, value="cphContent_rdlInternal1").click()
     # Select(pnlAddEditTimelist.find_element(
