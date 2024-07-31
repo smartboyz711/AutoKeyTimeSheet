@@ -50,7 +50,7 @@ class Data_fill:
             "Role": self.role,
             "Task": self.task,
             "BillType": self.billType,
-            "Description": str(self.description),
+            "Description": self.description.description_str(),
             "Hours": self.hours,
             "StatusMessage": self.statusMessage
         }
