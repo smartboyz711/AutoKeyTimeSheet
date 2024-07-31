@@ -11,7 +11,8 @@ import input_ReportAware as irt
 
 def main():
     try:
-
+                   # gen report
+        start_time: datetime = datetime.now()
         # input for jira clock work
         starting_at_str = irt.starting_at_str
         ending_at_str = irt.ending_at_str
@@ -91,9 +92,7 @@ def main():
             #Set order of columns
             df_summary = df_summary[["author_display_name","author_emailAddress","ais_sff_hour","ais_sff_day","overtime_hour",
                                     "overtime_day","non_billable_hour","non_billable_day","summary_billable_day","working_days"]]
-            
-            # gen report
-            start_time = datetime.now()
+        
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
             fileName_report = f"jira_summary_timeSheet_{starting_at.strftime("%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
             pathName = "Report"
