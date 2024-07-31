@@ -11,7 +11,7 @@ import input_ReportAware as irt
 
 def main():
     try:
-                   # gen report
+        # gen report
         start_time: datetime = datetime.now()
         # input for jira clock work
         starting_at_str = irt.starting_at_str
