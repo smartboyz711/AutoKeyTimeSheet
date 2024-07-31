@@ -64,4 +64,4 @@ def main():
             driver.close()
         
     except Exception as e:
-        print("An error occurred Cannot Key time sheet. : "+str(e))
+        print(f"An error occurred Cannot Key time sheet. : {e})")
