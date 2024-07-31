@@ -7,10 +7,10 @@ from requests import Response
 
 
 @dataclass
-class Jira_Clockwork:
+class jira_clockwork:
 
     author_display_name: str
-    author_emailAddress: str
+    author_email_address: str
     started_dt: datetime
     project_key: str
     project_name: str
@@ -20,8 +20,8 @@ class Jira_Clockwork:
     issue_type: str
     issue_summary: str
     comment: str
-    timeSpent: str
-    timeSpentSeconds: int
+    time_spent: str
+    time_spent_seconds: int
 
     def as_dict(self) -> dict:
         return {k: v for k, v in asdict(self).items()}
@@ -29,10 +29,10 @@ class Jira_Clockwork:
 
 def api_jira_clockwork(
     token: str, starting_at: datetime, ending_at: datetime, list_user_query: List[str]
-) -> List[Jira_Clockwork]:
+) -> List[jira_clockwork]:
 
     jira_clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
-    list_jira_clockwork: List[Jira_Clockwork] = []
+    list_jira_clockwork: list[jira_clockwork] = []
 
     if not all([token, starting_at, ending_at, list_user_query]):
         return list_jira_clockwork
@@ -84,9 +84,9 @@ def api_jira_clockwork(
                 )
                 comment = data.get("comment", "").strip()
 
-                jira_clockwork = Jira_Clockwork(
+                jira_data = jira_clockwork(
                     author_display_name=author_display_name,
-                    author_emailAddress=author_email_address,
+                    author_email_address=author_email_address,
                     started_dt=started_dt,
                     project_key=project_key,
                     project_name=project_name,
@@ -96,10 +96,10 @@ def api_jira_clockwork(
                     issue_type=issue_type,
                     issue_summary=issue_summary,
                     comment=comment,
-                    timeSpent=time_spent,
-                    timeSpentSeconds=time_spent_seconds,
+                    time_spent=time_spent,
+                    time_spent_seconds=time_spent_seconds,
                 )
-                list_jira_clockwork.append(jira_clockwork)
+                list_jira_clockwork.append(jira_data)
 
             except KeyError as e:
                 print(f"Missing key in data: {e}")
@@ -120,7 +120,7 @@ def api_jira_clockwork(
 
 async def api_jira_clockwork_async(
     token: str, starting_at: datetime, ending_at: datetime, list_user_query: list[str]
-) -> list[Jira_Clockwork]:
+) -> list[jira_clockwork]:
 
     return await asyncio.to_thread(
         api_jira_clockwork, token, starting_at, ending_at, list_user_query
@@ -132,17 +132,17 @@ async def api_jira_clockwork_async_all_token(
     starting_at: datetime,
     ending_at: datetime,
     list_user_query: list[str],
-) -> list[Jira_Clockwork]:
+) -> list[jira_clockwork]:
 
-    list_jira_Clockwork: list[Jira_Clockwork] = []
+    list_jira_clockwork: list[jira_clockwork] = []
     if list_token:
         tasks = [
             api_jira_clockwork_async(token, starting_at, ending_at, list_user_query)
             for token in list_token
         ]
-        results: list[list[Jira_Clockwork]] = await asyncio.gather(*tasks)
+        results: list[list[jira_clockwork]] = await asyncio.gather(*tasks)
 
         for result in results:
-            list_jira_Clockwork.extend(result)
+            list_jira_clockwork.extend(result)
 
-    return list_jira_Clockwork
+    return list_jira_clockwork

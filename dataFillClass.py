@@ -3,54 +3,56 @@ from dataclasses import dataclass
 from datetime import datetime
 import defaultData
 
-@dataclass()
-class Description:
-    
-    parent_summary: str
-    issue_Type: str
-    issue_summary: str
-    comment: str
-    billType: str
 
-    def description_str(self) -> str:
-        if(self.billType == "Overtime") :
-            return self.comment
-        else :
-            return f"{self.parent_summary}\n- {self.issue_Type} : {self.issue_summary}\n- Comment : {self.comment}"
 @dataclass()
-class Data_fill:
+class data_fill:
 
     customer: str
     project: str
     role: str
     task: str
-    billType: str
+    bill_type: str
     filldatetime: datetime
     hours: float
-    description: Description
-    statusMessage: str = ""
+    status_message: str
 
     def get_id_billtype(self) -> str:
-        if (self.billType == "Regular"):
+        if self.bill_type == "Regular":
             return "cphContent_rdoPopBillType_0"  # Regular
-        elif (self.billType == "Overtime"):
+        elif self.bill_type == "Overtime":
             return "cphContent_rdoPopBillType_1"  # Overtime
-        elif (self.billType == "Non-Billable"):
+        elif self.bill_type == "Non-Billable":
             return "cphContent_rdoPopBillType_2"  # Non-Billable
-        elif (self.billType == "Overtime Nonbill"):
+        elif self.bill_type == "Overtime Nonbill":
             return "cphContent_rdoPopBillType_3"  # Overtime Nonbill
         else:
             return "cphContent_rdoPopBillType_0"  # Regular
 
+
+@dataclass()
+class data_fill_jira(data_fill):
+
+    project_name: str
+    parent_summary: str
+    issue_Type: str
+    issue_summary: str
+    comment: str
+
+    def description_str(self) -> str:
+        if self.bill_type == "Overtime":
+            return self.comment
+        else:
+            return f"Project: {self.project_name}\n{self.parent_summary}\n{self.issue_Type}: {self.issue_summary}\nComment: {self.comment}"
+
     def as_dict(self) -> dict:
         return {
-            "Datetime": self.filldatetime.strftime(defaultData.df_string),
+            "Datetime": self.filldatetime.strftime(format=defaultData.df_string),
             "Customer": self.customer,
             "Project": self.project,
             "Role": self.role,
             "Task": self.task,
-            "BillType": self.billType,
-            "Description": self.description.description_str(),
+            "BillType": self.bill_type,
+            "Description": self.description_str(),
             "Hours": self.hours,
-            "StatusMessage": self.statusMessage
+            "StatusMessage": self.status_message,
         }

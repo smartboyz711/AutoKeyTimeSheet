@@ -1,20 +1,19 @@
 from datetime import datetime, timedelta
-from dataFillClass import Data_fill
-from dataFillClass import Description
+from dataFillClass import data_fill_jira
 import input_autoTimeSheet as iat
-from jitaClockWork import Jira_Clockwork
+from jitaClockWork import jira_clockwork
 
 
 def time_to_float(time_str: str) -> float:
-    time_dt = datetime.strptime(time_str, "%H:%M")
-    hour = time_dt.hour
-    minute = time_dt.minute
-    fraction = minute / 60
-    result = round(hour + fraction, 4)
+    time_dt: datetime = datetime.strptime(time_str, "%H:%M")
+    hour: int = time_dt.hour
+    minute: int = time_dt.minute
+    fraction: float = minute / 60
+    result: float = round(number=hour + fraction, ndigits=4)
     return result
 
 
-def seconds_to_timeFloat(seconds: int) -> float:
+def seconds_to_timefloat(seconds: int) -> float:
     time_dt_str = str(timedelta(seconds=seconds))
     list_time_dt_str = time_dt_str.split(":")
     hour = int(list_time_dt_str[0])
@@ -24,71 +23,72 @@ def seconds_to_timeFloat(seconds: int) -> float:
     return result
 
 
-def convert_jira_to_list(list_jitaClockwork: list[Jira_Clockwork]) -> list[Data_fill]:
-    data_fill_list: list[Data_fill] = []
-    if len(list_jitaClockwork) > 0:
-        for jitaClockwork in list_jitaClockwork:
-            hours = seconds_to_timeFloat(jitaClockwork.timeSpentSeconds)
-            customer = iat.default_customer
-            project = iat.default_project
-            role = iat.default_role
-            task = ""
-            billType = ""
-
-            # cal task
-            if (
-                jitaClockwork.parent_summary.lower() == "all leaves"
-                and jitaClockwork.issue_type == "Activity"
-            ):
-                task = "Leave"
-            elif (
-                "meeting" in jitaClockwork.issue_summary.lower()
-                or "scrum activity" in jitaClockwork.issue_summary.lower()
-                or "discussion" in jitaClockwork.issue_summary.lower()
-                or "ประชุม" in jitaClockwork.issue_summary.lower()
-                or "หารือ" in jitaClockwork.issue_summary.lower()
-                or jitaClockwork.issue_type == "Activity"
-            ):
-                task = "Other"
-            elif (
-                "consult / support" in jitaClockwork.parent_summary.lower()
-                or jitaClockwork.issue_summary.lower().startswith("support")
-            ):
-                task = "Support"
-            else:
-                task = iat.default_task
-            # cal billType
-            if task == "Leave" or (
-                jitaClockwork.issue_type == "Activity"
-                and jitaClockwork.issue_summary == "ATS Activity"
-            ):
-                billType = "Non-Billable"
-            elif (
-                jitaClockwork.comment.startswith("OT")
-                and jitaClockwork.issue_type == "Sub-task"
-            ):
-                billType = "Overtime"
-            else:
-                billType = "Regular"
-
-            description = Description(
-                parent_summary=jitaClockwork.parent_summary,
-                issue_Type=jitaClockwork.issue_type,
-                issue_summary=jitaClockwork.issue_summary,
-                comment=jitaClockwork.comment,
-                billType=billType,
+def convert_jira_to_list(
+    list_jitaclockwork: list[jira_clockwork],
+) -> list[data_fill_jira]:
+    def determine_task(jitaclockwork: jira_clockwork) -> str:
+        if (
+            jitaclockwork.parent_summary.lower() == "all leaves"
+            and jitaclockwork.issue_type == "Activity"
+        ):
+            return "Leave"
+        elif (
+            any(
+                keyword in jitaclockwork.issue_summary.lower()
+                for keyword in [
+                    "meeting",
+                    "scrum activity",
+                    "discussion",
+                    "ประชุม",
+                    "หารือ",
+                ]
             )
+            or jitaclockwork.issue_type == "Activity"
+        ):
+            return "Other"
+        elif (
+            "consult / support" in jitaclockwork.parent_summary.lower()
+            or jitaclockwork.issue_summary.lower().startswith("support")
+        ):
+            return "Support"
+        return iat.default_task
 
-            data_fill = Data_fill(
-                customer=customer,
-                project=project,
-                role=role,
-                task=task,
-                billType=billType,
-                filldatetime=jitaClockwork.started_dt,
-                hours=hours,
-                description=description,
-            )
+    def determine_bill_type(jitaclockwork: jira_clockwork, task: str) -> str:
+        if task == "Leave" or (
+            jitaclockwork.issue_type == "Activity"
+            and jitaclockwork.issue_summary == "ATS Activity"
+        ):
+            return "Non-Billable"
+        elif (
+            jitaclockwork.comment.startswith("OT")
+            and jitaclockwork.issue_type == "Sub-task"
+        ):
+            return "Overtime"
+        return "Regular"
 
-            data_fill_list.append(data_fill)
+    data_fill_list: list[data_fill_jira] = []
+
+    for jitaclockwork in list_jitaclockwork:
+        hours: float = seconds_to_timefloat(seconds=jitaclockwork.time_spent_seconds)
+        task: str = determine_task(jitaclockwork=jitaclockwork)
+        bill_type: str = determine_bill_type(jitaclockwork=jitaclockwork, task=task)
+
+        data_jira = data_fill_jira(
+            customer=iat.default_customer,
+            project=iat.default_project,
+            role=iat.default_role,
+            task=task,
+            bill_type=bill_type,
+            filldatetime=jitaclockwork.started_dt,
+            hours=hours,
+            status_message="",
+            project_name=jitaclockwork.project_name,
+            parent_summary=jitaclockwork.parent_summary,
+            issue_Type=jitaclockwork.issue_type,
+            issue_summary=jitaclockwork.issue_summary,
+            comment=jitaclockwork.comment,
+        )
+
+        data_fill_list.append(data_jira)
+
     return data_fill_list
