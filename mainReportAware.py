@@ -110,7 +110,8 @@ def main():
                 df_jira_Clockwork.to_excel(writer, sheet_name="jira time sheet", index=False)
                 df_pivot_table_with_grand_total.to_excel(writer, sheet_name="pivot time sheet", index=False)
                 df_summary.to_excel(writer, sheet_name="summary time sheet", index=False)
-                
+            
+            print(f"result : Success in {datetime.now() - start_time} for Report : {outputdir}")
 
     except Exception as e:
         print("An error occurred When gen report : "+str(object=e))
