@@ -52,7 +52,8 @@ def main():
             try:
                 os.makedirs(pathname)
             except OSError as e:
-                print(f"directory is exists use this directory /{pathname}")
+                if e.errno == errno.EEXIST:
+                    print(f"directory is exists use this directory /{pathname}")
 
             outputdir = "{}/{}".format(pathname, filename_report+".xlsx")
             df_data_fill.to_excel(excel_writer=outputdir, index=False)
