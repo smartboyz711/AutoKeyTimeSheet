@@ -58,11 +58,11 @@ def main():
             
             #pivot table
             df_pivot_table = pd.pivot_table(df_jira_clockwork, values="time_spent_hours", 
-                                            index=['project_name','parent_summary','issue_summary','comment'],
+                                            index=['project_key','project_name','parent_summary','issue_summary','comment'],
                                             columns=['author_display_name'], aggfunc="sum", fill_value=0)
             
             df_pivot_table = pd.DataFrame(df_pivot_table.to_records())
-            user_columns: pd.Index[str]  = df_pivot_table.columns[4:] 
+            user_columns: pd.Index[str]  = df_pivot_table.columns[5:] 
             df_pivot_table["total_hours"] = df_pivot_table[user_columns].sum(axis=1)
             
             #grand total
