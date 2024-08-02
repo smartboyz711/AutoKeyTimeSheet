@@ -67,6 +67,7 @@ def main():
             
             #grand total
             grand_total_row = {col: df_pivot_table[col].sum() for col in user_columns}
+            grand_total_row['project_key'] = ''
             grand_total_row['project_name'] = ''
             grand_total_row['parent_summary'] = ''
             grand_total_row['issue_summary'] = ''
