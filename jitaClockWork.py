@@ -12,6 +12,8 @@ class jira_clockwork:
     author_display_name: str
     author_email_address: str
     started_dt: datetime
+    time_spent: str
+    time_spent_seconds: int
     project_key: str
     project_name: str
     parent_key: str
@@ -20,8 +22,6 @@ class jira_clockwork:
     issue_type: str
     issue_summary: str
     comment: str
-    time_spent: str
-    time_spent_seconds: int
 
     def as_dict(self) -> dict:
         return {k: v for k, v in asdict(self).items()}
