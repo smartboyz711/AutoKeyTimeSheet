@@ -90,6 +90,12 @@ def main():
             #Set order of columns
             df_summary = df_summary[["author_display_name","author_email_address","ais_sff_hour","ais_sff_day","overtime_hour",
                                     "overtime_day","non_billable_hour","non_billable_day","summary_billable_day","working_days"]]
+            
+            user_columns: pd.Index[str]  = df_summary.columns[2:]
+            grand_total_row_summary = {col: df_summary[col].sum() for col in user_columns}
+            grand_total_row_summary['author_email_address'] = "Grand Total"
+            grand_total_row_summary_df = pd.DataFrame(grand_total_row_summary, index=[0])
+            df_summary = pd.concat([df_summary, grand_total_row_summary_df], ignore_index=True)
         
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
             filename_report = f"jira_summary_timeSheet_{starting_at.strftime("%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
@@ -111,5 +117,5 @@ def main():
             print(f"result : Success in {datetime.now() - start_time} for Report : {outputdir}")
 
     except Exception as e:
-        print(f"An error occurred When gen report : {e}")
+        print(f"An error occurred When gen report : {e.args}")
 
