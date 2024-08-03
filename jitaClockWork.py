@@ -9,7 +9,6 @@ import defaultData
 
 @dataclass
 class jira_clockwork:
-
     author_display_name: str
     author_email_address: str
     started_dt: datetime
@@ -31,7 +30,6 @@ class jira_clockwork:
 def api_jira_clockwork(
     token: str, starting_at: datetime, ending_at: datetime, list_user_query: List[str]
 ) -> List[jira_clockwork]:
-
     jira_clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
     list_jira_clockwork: list[jira_clockwork] = []
 
@@ -79,7 +77,9 @@ def api_jira_clockwork(
                 time_spent = data["timeSpent"]
                 time_spent_seconds = data["timeSpentSeconds"]
                 started_dt: datetime = (
-                    datetime.fromisoformat(data["started"]).astimezone(defaultData.thailand_tz)
+                    datetime.fromisoformat(data["started"]).astimezone(
+                        defaultData.thailand_tz
+                    )
                     if "started" in data
                     else datetime.min
                 )
@@ -122,7 +122,6 @@ def api_jira_clockwork(
 async def api_jira_clockwork_async(
     token: str, starting_at: datetime, ending_at: datetime, list_user_query: list[str]
 ) -> list[jira_clockwork]:
-
     return await asyncio.to_thread(
         api_jira_clockwork, token, starting_at, ending_at, list_user_query
     )
@@ -134,7 +133,6 @@ async def api_jira_clockwork_async_all_token(
     ending_at: datetime,
     list_user_query: list[str],
 ) -> list[jira_clockwork]:
-
     list_jira_clockwork: list[jira_clockwork] = []
     if list_token:
         tasks = [
