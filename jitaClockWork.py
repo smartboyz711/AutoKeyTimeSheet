@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List
 import requests
 from requests import Response
+import defaultData
 
 
 @dataclass
@@ -77,8 +78,8 @@ def api_jira_clockwork(
                 issue_summary = data["issue"]["fields"]["summary"].strip()
                 time_spent = data["timeSpent"]
                 time_spent_seconds = data["timeSpentSeconds"]
-                started_dt = (
-                    datetime.fromisoformat(data["started"]).replace(tzinfo=None)
+                started_dt: datetime = (
+                    datetime.fromisoformat(data["started"]).astimezone(defaultData.thailand_tz)
                     if "started" in data
                     else datetime.min
                 )
