@@ -183,15 +183,11 @@ def main():
 
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
             filename_report = f"jira_summary_timeSheet_{starting_at.strftime("%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
-            pathname = "Report"
-            outputdir = "{}/{}".format(pathname, filename_report + ".xlsx")
+            pathname = f"Report/{ending_at.strftime("%b %Y")}"
+            outputdir = f"{pathname}/{filename_report}.xlsx"
             # Create Path
-            try:
-                os.makedirs(pathname)
-            except OSError as e:
-                # If directory is exists use this directory
-                if e.errno == errno.EEXIST:
-                    print(f"directory is exists use this directory /{pathname}")
+
+            os.makedirs(pathname,exist_ok=True)
 
             with pd.ExcelWriter(outputdir) as writer:
                 df_jira_clockwork.to_excel(
