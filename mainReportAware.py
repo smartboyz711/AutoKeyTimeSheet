@@ -1,6 +1,5 @@
 import asyncio
 from datetime import datetime
-import errno
 import os
 
 import defaultData
