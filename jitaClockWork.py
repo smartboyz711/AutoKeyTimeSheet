@@ -1,10 +1,11 @@
 import asyncio
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Union
 import requests
 from requests import Response
 import defaultData
+import logging
 
 
 @dataclass
@@ -23,7 +24,7 @@ class jira_clockwork:
     issue_summary: str
     comment: str
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> Dict[str, str]:
         return {k: v for k, v in asdict(self).items()}
 
 
@@ -31,7 +32,7 @@ def api_jira_clockwork(
     token: str, starting_at: datetime, ending_at: datetime, list_user_query: List[str]
 ) -> List[jira_clockwork]:
     jira_clockwork_url = "https://api.clockwork.report/v1/worklogs?expand=authors,issues,epics,emails,worklogs,comments"
-    list_jira_clockwork: list[jira_clockwork] = []
+    list_jira_clockwork: List[jira_clockwork] = []
 
     if not all([token, starting_at, ending_at, list_user_query]):
         return list_jira_clockwork
@@ -103,45 +104,55 @@ def api_jira_clockwork(
                 list_jira_clockwork.append(jira_data)
 
             except KeyError as e:
-                print(f"Missing key in data: {e}")
+                logging.warning(f"Missing key in data: {e}")
                 continue
             except Exception as e:
-                print(f"Error processing worklog data: {e}")
+                logging.error(f"Error processing worklog data: {e}")
                 continue
 
         list_jira_clockwork.sort(key=lambda x: (x.author_display_name, x.started_dt))
 
     except requests.RequestException as e:
-        print(f"api_jira_clockwork Request error: {e}")
+        logging.error(f"api_jira_clockwork Request error: {e}")
     except Exception as e:
-        print(f"api_jira_clockwork Unexpected error: {e}")
+        logging.error(f"api_jira_clockwork Unexpected error: {e}")
 
     return list_jira_clockwork
 
 
 async def api_jira_clockwork_async(
-    token: str, starting_at: datetime, ending_at: datetime, list_user_query: list[str]
-) -> list[jira_clockwork]:
+    token: str, starting_at: datetime, ending_at: datetime, list_user_query: List[str]
+) -> List[jira_clockwork]:
     return await asyncio.to_thread(
         api_jira_clockwork, token, starting_at, ending_at, list_user_query
     )
 
 
 async def api_jira_clockwork_async_all_token(
-    list_token: list[str],
+    list_token: List[str],
     starting_at: datetime,
     ending_at: datetime,
-    list_user_query: list[str],
-) -> list[jira_clockwork]:
-    list_jira_clockwork: list[jira_clockwork] = []
+    list_user_query: List[str],
+) -> List[jira_clockwork]:
+    list_jira_clockwork: List[jira_clockwork] = []
     if list_token:
         tasks = [
-            api_jira_clockwork_async(token, starting_at, ending_at, list_user_query)
+            api_jira_clockwork_async(
+                token=token,
+                starting_at=starting_at,
+                ending_at=ending_at,
+                list_user_query=list_user_query,
+            )
             for token in list_token
         ]
-        results: list[list[jira_clockwork]] = await asyncio.gather(*tasks)
+        results: List[
+            Union[List[jira_clockwork], BaseException]
+        ] = await asyncio.gather(*tasks, return_exceptions=True)
 
         for result in results:
-            list_jira_clockwork.extend(result)
+            if isinstance(result, list):
+                list_jira_clockwork.extend(result)
+            else:
+                logging.error(f"Error in one of the tasks: {result}")
 
     return list_jira_clockwork
