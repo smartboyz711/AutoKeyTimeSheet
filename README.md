@@ -49,4 +49,5 @@ List_email: list[str] = [
     "XXXX49@postbox.in.th"
 ] 
 
-ไฟล์ Report jira time sheet อยู่ที่ folder Report/ ชื่อไฟล์ขึ้นต้นด้วย jira_summary_timeSheet_XXXX.xlsx
+ไฟล์ Report jira time sheet อยู่ที่ folder Report/Jul 2024 (ชื่อ Folder คือเวลา เดือนและปี ที่ดึง report)
+ชื่อไฟล์ขึ้นต้นด้วย jira_summary_timeSheet_XXXX.xlsx
