@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 import requests
 from requests import Response
 import defaultData
@@ -24,7 +24,7 @@ class jira_clockwork:
     issue_summary: str
     comment: str
 
-    def as_dict(self) -> Dict[str, str]:
+    def as_dict(self) -> Dict[str, Any]:
         return {k: v for k, v in asdict(self).items()}
 
 
