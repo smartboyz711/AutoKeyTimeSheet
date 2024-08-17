@@ -42,7 +42,7 @@ class data_fill_jira(data_fill):
         if self.bill_type == "Overtime":
             return self.comment
         else:
-            return f"Project: {self.project_name}\n{self.parent_summary}\n{self.issue_Type}: {self.issue_summary}\nComment: {self.comment}"
+            return f"Project: {self.project_name}\nTask: {self.parent_summary}\n{self.issue_Type}: {self.issue_summary}\nComment: {self.comment}"
 
     def as_dict(self) -> dict:
         return {

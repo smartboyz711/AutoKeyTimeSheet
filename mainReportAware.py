@@ -9,6 +9,15 @@ from jitaClockWork import jira_clockwork
 import input_ReportAware as irt
 
 
+def path_name_report(starting_at: datetime, ending_at: datetime) -> str:
+    starting_at_str: str = starting_at.strftime("%b %Y")
+    ending_at_str: str = ending_at.strftime("%b %Y")
+    pathname = f"Report/{starting_at_str} - {ending_at_str}"
+    if starting_at_str == ending_at_str:
+        pathname: str = f"Report/{starting_at_str}"
+    return pathname
+
+
 def main():
     try:
         # gen report
@@ -182,11 +191,11 @@ def main():
 
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
             filename_report = f"jira_summary_timeSheet_{starting_at.strftime("%d%m%Y")}_to_{ending_at.strftime("%d%m%Y")}_by_{date_today}"
-            pathname = f"Report/{ending_at.strftime("%b %Y")}"
+            pathname = path_name_report(starting_at, ending_at)
             outputdir = f"{pathname}/{filename_report}.xlsx"
             # Create Path
 
-            os.makedirs(pathname,exist_ok=True)
+            os.makedirs(pathname, exist_ok=True)
 
             with pd.ExcelWriter(outputdir) as writer:
                 df_jira_clockwork.to_excel(

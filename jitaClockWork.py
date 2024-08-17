@@ -80,7 +80,7 @@ def api_jira_clockwork(
                 started_dt: datetime = (
                     datetime.fromisoformat(data["started"]).astimezone(
                         defaultData.thailand_tz
-                    )
+                    ).replace(tzinfo=None)
                     if "started" in data
                     else datetime.min
                 )
