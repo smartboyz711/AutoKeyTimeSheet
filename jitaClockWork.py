@@ -6,6 +6,8 @@ import requests
 from requests import Response
 import defaultData
 import logging
+import pandas as pd
+import glob
 
 
 @dataclass
@@ -156,3 +158,57 @@ async def api_jira_clockwork_async_all_token(
                 logging.error(f"Error in one of the tasks: {result}")
 
     return list_jira_clockwork
+
+
+def read_and_combine_excel_files(folder_path: str, prefix:str = 'worklogs_',sheet_name: str = 'Sheet1') -> pd.DataFrame:
+    # Find all Excel files in the specified folder
+    excel_files = glob.glob(folder_path + f"{prefix}.xlsx")
+
+    # List to store DataFrames from each file
+    dataframes = []
+
+    # Read each Excel file and append the DataFrame to the list
+    for file in excel_files:
+        try:
+            df = pd.read_excel(file, sheet_name=sheet_name)
+            dataframes.append(df)
+        except Exception as e:
+            print(f"Error reading {file}: {e}")
+
+    # Combine all DataFrames into one
+    if dataframes:
+        combined_df = pd.concat(dataframes, ignore_index=True)
+    else:
+        combined_df = pd.DataFrame()
+
+    return combined_df.drop_duplicates(inplace=True)
+
+def convert_dataframe_to_jira_clockwork(df: pd.DataFrame) -> List[jira_clockwork]:
+    jira_objects: List[jira_clockwork] = []
+
+    for _, row in df.iterrows():
+        # Extract data from the DataFrame row and create a jira_clockwork instance
+        jira_obj = jira_clockwork(
+            author_display_name=row['Author'],  # Adjust column names as necessary
+            author_email_address='',  
+            started_dt= (
+                    datetime.fromisoformat(row["Started at"]).astimezone(
+                        defaultData.thailand_tz
+                    ).replace(tzinfo=None)
+                    if "Started at" in row
+                    else datetime.min
+                ),  # Convert to datetime
+            time_spent=row['Time spent'],
+            time_spent_seconds=int(row['Time Spent (seconds)']),
+            project_key=row['Project Key'],  # Example placeholder column
+            project_name=str(row['Project Name']).strip() if pd.notna(row['Project Name']) else '',  # Example placeholder column
+            parent_key=row['Parent Key'] if pd.notna(row['Parent Key']) else '',
+            parent_summary=str(row['Parent Summary']).strip() if pd.notna(row['Parent Summary']) else '',
+            issue_key=row['Issue Key'],
+            issue_type=row['Issue Type'],
+            issue_summary=str(row['Issue Summary']).strip() if pd.notna(row['Issue Summary']) else '',
+            comment=str(row['Comment']).strip() if pd.notna(row['Comment']) else ''  # Handle NaN values
+        )
+        jira_objects.append(jira_obj)
+
+    return jira_objects
