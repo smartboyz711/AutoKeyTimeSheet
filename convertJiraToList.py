@@ -57,9 +57,9 @@ def determine_bill_type(jitaclockwork: jira_clockwork, task: str) -> str:
         and jitaclockwork.issue_summary == "ATS Activity"
     ):
         return "Non-Billable"
-    elif (
-        jitaclockwork.comment.startswith("OT")
-        and jitaclockwork.issue_type == "Sub-task"
+    elif jitaclockwork.comment.startswith("OT") and (
+        jitaclockwork.issue_type == "Sub-task"
+        or jitaclockwork.issue_type == "Management"
     ):
         return "Overtime"
     return "Regular"
