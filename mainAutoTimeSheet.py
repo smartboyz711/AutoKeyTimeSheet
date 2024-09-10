@@ -1,7 +1,8 @@
 from datetime import datetime
 import os
-import defaultData
+from typing import List
 import pandas as pd
+from pandas import DataFrame
 import convertJiraToList as cjtl
 import jitaClockWork as jcw
 from jitaClockWork import jira_clockwork
@@ -13,34 +14,19 @@ import input_autoTimeSheet as iat
 
 def main():
     try:
-        # input for jira clock work
-        email_jira_clockwork = iat.email_jira_clockwork
-        api_token = iat.api_token
-        starting_at_str = iat.starting_at_str
-        ending_at_str = iat.ending_at_str
-
-        # input user password aware
-        username_aware = iat.username_aware
-        password_aware = iat.password_aware
-
-        list_email_jira_clockwork: list[str] = []
-        list_email_jira_clockwork.append(email_jira_clockwork)
-        starting_at = datetime.strptime(starting_at_str, defaultData.df_string)
-        ending_at = datetime.strptime(ending_at_str, defaultData.df_string)
-
-        list_jira_clockwork: list[jira_clockwork] = jcw.api_jira_clockwork(
-            token=api_token,
-            starting_at=starting_at,
-            ending_at=ending_at,
-            list_user_query=list_email_jira_clockwork,
+        jira_df: DataFrame = jcw.read_and_combine_excel_files(
+            folder_path=iat.folder_path
+        )
+        list_jira_clockwork: List[jira_clockwork] = (
+            jcw.convert_dataframe_to_jira_clockwork(df=jira_df)
         )
 
-        if len(list_jira_clockwork) > 0:
+        if list_jira_clockwork :
             data_fill_list: list[data_fill_jira] = cjtl.convert_jira_to_list(
                 list_jitaclockwork=list_jira_clockwork
             )
             driver: WebDriver = kt.get_driver()
-            kt.login_time_entry(driver, username_aware, password_aware)
+            kt.login_time_entry(driver, iat.username_aware, password=iat.password_aware)
             data_fill_list = kt.main_filldatatask(driver, data_fill_list)
 
             df_data_fill = pd.DataFrame([x.as_dict() for x in data_fill_list])
@@ -51,8 +37,8 @@ def main():
             filename_report = f"Aware_time_sheet_report_{date_today}.xlsx"
             pathname = "Report"
             # Create Path
-            os.makedirs(pathname,exist_ok=True)
-            
+            os.makedirs(pathname, exist_ok=True)
+
             outputdir = f"{pathname}/{filename_report}"
             df_data_fill.to_excel(excel_writer=outputdir, index=False)
 

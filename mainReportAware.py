@@ -1,6 +1,6 @@
-import asyncio
 from datetime import datetime
 import os
+from typing import List
 
 import defaultData
 import pandas as pd
@@ -20,26 +20,17 @@ def path_name_report(starting_at: datetime, ending_at: datetime) -> str:
 
 def main():
     try:
-        # gen report
         start_time: datetime = datetime.now()
-        # input for jira clock work
-        starting_at_str = irt.starting_at_str
-        ending_at_str = irt.ending_at_str
-        list_email = irt.List_email
-        list_api_token = irt.list_api_token
 
-        # begin #
-        starting_at = datetime.strptime(starting_at_str, defaultData.df_string)
-        ending_at = datetime.strptime(ending_at_str, defaultData.df_string)
+        starting_at: datetime = datetime.strptime(irt.starting_at_str, "%d/%m/%Y")
+        ending_at: datetime = datetime.strptime(irt.ending_at_str, "%d/%m/%Y")
 
-        list_jira_clockwork: list[jira_clockwork] = []
-
-        if list_api_token:
-            list_jira_clockwork = asyncio.run(
-                jcw.api_jira_clockwork_async_all_token(
-                    list_api_token, starting_at, ending_at, list_email
-                )
-            )
+        jira_df: pd.DataFrame = jcw.read_and_combine_excel_files(
+            folder_path=irt.folder_path
+        )
+        list_jira_clockwork: List[jira_clockwork] = (
+            jcw.convert_dataframe_to_jira_clockwork(df=jira_df)
+        )
 
         if list_jira_clockwork:
             df_jira_clockwork = pd.DataFrame([x.as_dict() for x in list_jira_clockwork])
@@ -69,7 +60,10 @@ def main():
 
             # new field time_ot
             df_jira_clockwork["time_ot"] = df_jira_clockwork.loc[
-                (df_jira_clockwork["issue_type"] == "Sub-task")
+                (
+                    (df_jira_clockwork["issue_type"] == "Sub-task")
+                    | (df_jira_clockwork["issue_type"] == "Management")
+                )
                 & (df_jira_clockwork["comment"].str.startswith("OT"))
             ]["time_spent_seconds"]
 
@@ -110,33 +104,33 @@ def main():
 
             # group by result
             df_summary = (
-                df_jira_clockwork.groupby(
-                    ["author_display_name", "author_email_address"], dropna=False
-                )["time_spent_seconds"]
+                df_jira_clockwork.groupby(["author_display_name"], dropna=False)[
+                    "time_spent_seconds"
+                ]
                 .sum()
                 .reset_index(name="total_time")
             )
             df_summary["total_time_hours"] = df_summary["total_time"] / 3600
             df_summary["total_leave_time_hours"] = (
-                df_jira_clockwork.groupby(
-                    ["author_display_name", "author_email_address"], dropna=False
-                )["time_leave"]
+                df_jira_clockwork.groupby(["author_display_name"], dropna=False)[
+                    "time_leave"
+                ]
                 .sum()
                 .reset_index(name="total_leave")["total_leave"]
                 / 3600
             )
             df_summary["total_activity_time_hours"] = (
-                df_jira_clockwork.groupby(
-                    ["author_display_name", "author_email_address"], dropna=False
-                )["time_activity"]
+                df_jira_clockwork.groupby(["author_display_name"], dropna=False)[
+                    "time_activity"
+                ]
                 .sum()
                 .reset_index(name="total_activity")["total_activity"]
                 / 3600
             )
             df_summary["overtime_hour"] = (
-                df_jira_clockwork.groupby(
-                    ["author_display_name", "author_email_address"], dropna=False
-                )["time_ot"]
+                df_jira_clockwork.groupby(["author_display_name"], dropna=False)[
+                    "time_ot"
+                ]
                 .sum()
                 .reset_index(name="total_ot")["total_ot"]
                 / 3600
@@ -165,7 +159,6 @@ def main():
             df_summary = df_summary[
                 [
                     "author_display_name",
-                    "author_email_address",
                     "ais_sff_hour",
                     "ais_sff_day",
                     "overtime_hour",
@@ -177,11 +170,11 @@ def main():
                 ]
             ]
 
-            user_columns: pd.Index[str] = df_summary.columns[2:]
+            user_columns: pd.Index[str] = df_summary.columns[1:]
             grand_total_row_summary = {
                 col: df_summary[col].sum() for col in user_columns
             }
-            grand_total_row_summary["author_email_address"] = "Grand Total"
+            grand_total_row_summary["author_display_name"] = "Grand Total"
             grand_total_row_summary_df = pd.DataFrame(
                 grand_total_row_summary, index=[0]
             )
