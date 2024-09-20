@@ -99,7 +99,7 @@ def read_and_process_data(folder_path_jira: str) -> pd.DataFrame:
         calculate_charge_ais, axis=1
     )
 
-    df_jira_clockwork[
+    df_jira_clockwork = df_jira_clockwork[
         [
             "author_display_name",
             "started_dt",
