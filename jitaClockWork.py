@@ -161,10 +161,10 @@ async def api_jira_clockwork_async_all_token(
 
 
 def read_and_combine_excel_files(
-    folder_path: str, prefix: str = "worklogs_", sheet_name: str = "Sheet1"
+    folder_path: str = "", prefix: str = "worklogs_", sheet_name: str = "Sheet1"
 ) -> pd.DataFrame:
     # Find all Excel files in the specified folder
-    excel_files = glob.glob(folder_path + f"{prefix}.xlsx")
+    excel_files = glob.glob(folder_path + f"{prefix}*.xlsx")
 
     # List to store DataFrames from each file
     dataframes = []
@@ -175,15 +175,16 @@ def read_and_combine_excel_files(
             df = pd.read_excel(file, sheet_name=sheet_name)
             dataframes.append(df)
         except Exception as e:
-            print(f"Error reading {file}: {e}")
+            logging.error(f"Error reading {file}: {e}")
 
     # Combine all DataFrames into one
     if dataframes:
         combined_df = pd.concat(dataframes, ignore_index=True)
+        combined_df = combined_df.drop_duplicates()  # Remove duplicates without inplace
     else:
         combined_df = pd.DataFrame()
 
-    return combined_df.drop_duplicates(inplace=True)
+    return combined_df
 
 
 def convert_dataframe_to_jira_clockwork(df: pd.DataFrame) -> List[jira_clockwork]:
@@ -204,19 +205,19 @@ def convert_dataframe_to_jira_clockwork(df: pd.DataFrame) -> List[jira_clockwork
             time_spent=row["Time spent"],
             time_spent_seconds=int(row["Time Spent (seconds)"]),
             project_key=row["Project Key"],  # Example placeholder column
-            project_name=str(row["Project Name"]).strip()
+            project_name=str(row["Project Name"]).replace("\n", "").strip()
             if pd.notna(row["Project Name"])
             else "",  # Example placeholder column
             parent_key=row["Parent Key"] if pd.notna(row["Parent Key"]) else "",
-            parent_summary=str(row["Parent Summary"]).strip()
+            parent_summary=str(row["Parent Summary"]).replace("\n", "").strip()
             if pd.notna(row["Parent Summary"])
             else "",
             issue_key=row["Issue Key"],
             issue_type=row["Issue Type"],
-            issue_summary=str(row["Issue Summary"]).strip()
+            issue_summary=str(row["Issue Summary"]).replace("\n", "").strip()
             if pd.notna(row["Issue Summary"])
             else "",
-            comment=str(row["Comment"]).strip()
+            comment=str(row["Comment"]).replace("\n", "").strip()
             if pd.notna(row["Comment"])
             else "",  # Handle NaN values
         )
