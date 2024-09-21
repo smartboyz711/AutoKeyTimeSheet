@@ -164,31 +164,75 @@ def create_pivot_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     return df_pivot_table_with_grand_total
 
 
+def create_pivot_table_charge_ais(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
+    """Create a pivot table from the Jira clockwork DataFrame."""
+    df_pivot_table = pd.pivot_table(
+        df_jira_clockwork,
+        values="Charge AIS",
+        index=["Room","Project-Key","Task Detail"],
+        columns=["author_display_name"],
+        aggfunc="sum",
+        fill_value=0,
+    )
+
+    # Flatten pivot table
+    df_pivot_table = pd.DataFrame(df_pivot_table.to_records())
+    df_pivot_table["total_days"] = df_pivot_table.iloc[:, 3:].sum(axis=1)
+
+    # Add grand total
+    grand_total_row = {
+        col: df_pivot_table[col].sum() for col in df_pivot_table.columns[3:]
+    }
+    grand_total_row["Task Detail"] = "Grand Total"
+    grand_total_row["total_days"] = df_pivot_table["total_days"].sum()
+    grand_total_df = pd.DataFrame(grand_total_row, index=[0])
+    df_pivot_table_with_grand_total = pd.concat(
+        [df_pivot_table, grand_total_df], ignore_index=True
+    )
+    return df_pivot_table_with_grand_total
+
+
 def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     """Create summary table for time spent."""
     df_summary = (
-        df_jira_clockwork.groupby("author_display_name", dropna=False)[
-            "time_spent_hours"
-        ]
+        df_jira_clockwork.groupby(
+            ["author_display_name", "Room", "Role"], dropna=False
+        )["time_spent_hours"]
         .sum()
         .reset_index(name="total_time_hours")
     )
 
     df_summary["total_leave_time_hours"] = (
-        df_jira_clockwork.groupby("author_display_name", dropna=False)["time_leave"]
+        df_jira_clockwork.groupby(
+            ["author_display_name", "Room", "Role"], dropna=False
+        )["time_leave"]
         .sum()
         .reset_index(name="total_leave")["total_leave"]
     )
     df_summary["total_activity_time_hours"] = (
-        df_jira_clockwork.groupby("author_display_name", dropna=False)["time_activity"]
+        df_jira_clockwork.groupby(
+            ["author_display_name", "Room", "Role"], dropna=False
+        )["time_activity"]
         .sum()
         .reset_index(name="total_activity")["total_activity"]
     )
+
     df_summary["overtime_hour"] = (
-        df_jira_clockwork.groupby("author_display_name", dropna=False)["time_ot"]
+        df_jira_clockwork.groupby(
+            ["author_display_name", "Room", "Role"], dropna=False
+        )["time_ot"]
         .sum()
         .reset_index(name="total_ot")["total_ot"]
     )
+
+    df_summary["total_charge_ais"] = (
+        df_jira_clockwork.groupby(
+            ["author_display_name", "Room", "Role"], dropna=False
+        )["Charge AIS"]
+        .sum()
+        .reset_index(name="total_charge_ais")["total_charge_ais"]
+    )
+
     df_summary["overtime_day"] = df_summary["overtime_hour"] / 8
     df_summary["ais_sff_hour"] = (
         df_summary["total_time_hours"]
@@ -211,6 +255,8 @@ def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     df_summary = df_summary[
         [
             "author_display_name",
+            "Room",
+            "Role",
             "ais_sff_hour",
             "ais_sff_day",
             "overtime_hour",
@@ -219,12 +265,13 @@ def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
             "non_billable_day",
             "summary_billable_day",
             "working_days",
+            "total_charge_ais",
         ]
-    ]
+    ].sort_values(["Room", "Role"])
 
     # Add grand total row
-    grand_total_row = {col: df_summary[col].sum() for col in df_summary.columns[1:]}
-    grand_total_row["author_display_name"] = "Grand Total"
+    grand_total_row = {col: df_summary[col].sum() for col in df_summary.columns[3:]}
+    grand_total_row["Role"] = "Grand Total"
     grand_total_df = pd.DataFrame(grand_total_row, index=[0])
     df_summary = pd.concat([df_summary, grand_total_df], ignore_index=True)
 
@@ -234,14 +281,16 @@ def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
 def save_to_excel(
     df_jira_clockwork: pd.DataFrame,
     df_pivot_table: pd.DataFrame,
+    df_pivot_charge_ais: pd.DataFrame,
     df_summary: pd.DataFrame,
     starting_at: datetime,
     ending_at: datetime,
+    folder_path_jita: str = "",
 ):
     """Save processed DataFrames to an Excel file."""
     date_today = datetime.now().strftime("%d%m%Y_%H%M%S")
     filename_report = f"jira_summary_timeSheet_{starting_at.strftime('%d%m%Y')}_to_{ending_at.strftime('%d%m%Y')}_by_{date_today}"
-    pathname = irt.folder_path_jira
+    pathname = folder_path_jita
     outputdir = f"{pathname}/{filename_report}.xlsx"
 
     # Ensure directory exists
@@ -250,6 +299,7 @@ def save_to_excel(
     with pd.ExcelWriter(outputdir) as writer:
         df_jira_clockwork.to_excel(writer, sheet_name="jira time sheet", index=False)
         df_pivot_table.to_excel(writer, sheet_name="pivot time sheet", index=False)
+        df_pivot_charge_ais.to_excel(writer, sheet_name="pivot charge ais", index=False)
         df_summary.to_excel(writer, sheet_name="summary time sheet", index=False)
 
     logger.info(f"Report saved successfully to {outputdir}")
@@ -265,15 +315,22 @@ def main():
         ending_at = datetime.strptime(irt.ending_at_str, "%d/%m/%Y")
 
         # Process data
-        df_jira_clockwork = read_and_process_data(irt.folder_path_jira)
+        df_jira_clockwork = read_and_process_data(folder_path_jira=irt.folder_path_jira)
 
         # Create reports
         df_pivot_table = create_pivot_table(df_jira_clockwork)
+        df_pivot_charge_ais = create_pivot_table_charge_ais(df_jira_clockwork)
         df_summary = create_summary_table(df_jira_clockwork)
 
         # Save results to Excel
         save_to_excel(
-            df_jira_clockwork, df_pivot_table, df_summary, starting_at, ending_at
+            df_jira_clockwork=df_jira_clockwork,
+            df_pivot_table=df_pivot_table,
+            df_pivot_charge_ais=df_pivot_charge_ais,
+            df_summary=df_summary,
+            starting_at=starting_at,
+            ending_at=ending_at,
+            folder_path_jita=irt.folder_path_jira,
         )
 
         # Log completion
