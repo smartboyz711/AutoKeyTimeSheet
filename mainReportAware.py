@@ -104,6 +104,8 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
     df_jira_clockwork = df_jira_clockwork[
         [
             "author_display_name",
+            "Room",
+            "Role",
             "started_dt",
             "time_spent",
             "time_spent_seconds",
@@ -115,14 +117,12 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
             "issue_type",
             "issue_summary",
             "comment",
+            "Project-Key",
+            "Task Detail",
             "time_spent_hours",
             "time_leave",
             "time_activity",
             "time_ot",
-            "Room",
-            "Role",
-            "Project-Key",
-            "Task Detail",
             "Manday 8 Hrs.",
             "Charge AIS",
         ]
