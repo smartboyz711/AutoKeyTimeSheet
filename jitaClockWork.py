@@ -6,9 +6,14 @@ import requests
 from requests import Response
 import defaultData
 import logging
+from logging import Logger
+
 import pandas as pd
 import glob
 
+# Setup logger
+logging.basicConfig(level=logging.INFO)
+logger: Logger = logging.getLogger(__name__)
 
 @dataclass
 class jira_clockwork:
@@ -115,9 +120,9 @@ def api_jira_clockwork(
         list_jira_clockwork.sort(key=lambda x: (x.author_display_name, x.started_dt))
 
     except requests.RequestException as e:
-        logging.error(f"api_jira_clockwork Request error: {e}")
+        logging.error(f"api_jira_clockwork Request error: {e}" , exc_info=True)
     except Exception as e:
-        logging.error(f"api_jira_clockwork Unexpected error: {e}")
+        logging.error(f"api_jira_clockwork Unexpected error: {e}", exc_info=True)
 
     return list_jira_clockwork
 
