@@ -9,8 +9,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-from dataFillClass import data_fill_jira
+
 import defaultData
+from dataFillClass import data_fill_jira
 
 list_deleted_time_date: list[str] = []
 list_tasked_time_date: list[str] = []

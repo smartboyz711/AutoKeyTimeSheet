@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
-from dataFillClass import data_fill_jira
+
 import input_autoTimeSheet as iat
+from dataFillClass import data_fill_jira
 from jitaClockWork import jira_clockwork
 
 
