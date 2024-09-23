@@ -38,9 +38,7 @@ def calculate_charge_ais(row):
 
 def read_and_process_data(folder_path_jira: str) -> DataFrame:
     """Read and process Jira data."""
-    jira_df: DataFrame = jcw.read_and_combine_excel_files(
-        folder_path=folder_path_jira
-    )
+    jira_df: DataFrame = jcw.read_and_combine_excel_files(folder_path=folder_path_jira)
     list_jira_clockwork: List[jira_clockwork] = jcw.convert_dataframe_to_jira_clockwork(
         df=jira_df
     )
@@ -173,7 +171,7 @@ def create_pivot_table_charge_ais(df_jira_clockwork: DataFrame) -> DataFrame:
     df_pivot_table = pd.pivot_table(
         df_jira_clockwork,
         values="Charge AIS",
-        index=["Room","Project-Key","Task Detail"],
+        index=["Room", "Project-Key", "Task Detail"],
         columns=["author_display_name"],
         aggfunc="sum",
         fill_value=0,
@@ -319,11 +317,15 @@ def main():
         ending_at: datetime = datetime.strptime(irt.ending_at_str, "%d/%m/%Y")
 
         # Process data
-        df_jira_clockwork: DataFrame = read_and_process_data(folder_path_jira=irt.folder_path_jira)
+        df_jira_clockwork: DataFrame = read_and_process_data(
+            folder_path_jira=irt.folder_path_jira
+        )
 
         # Create reports
         df_pivot_table: DataFrame = create_pivot_table(df_jira_clockwork)
-        df_pivot_charge_ais: DataFrame = create_pivot_table_charge_ais(df_jira_clockwork)
+        df_pivot_charge_ais: DataFrame = create_pivot_table_charge_ais(
+            df_jira_clockwork
+        )
         df_summary: DataFrame = create_summary_table(df_jira_clockwork)
 
         # Save results to Excel
