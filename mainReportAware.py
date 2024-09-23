@@ -4,14 +4,16 @@ from typing import List
 import logging
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 import jitaClockWork as jcw
 from jitaClockWork import jira_clockwork
 import input_ReportAware as irt
 import defaultData as dd
+from logging import Logger
 
 # Setup logger
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger: Logger = logging.getLogger(__name__)
 
 
 def path_name_report(starting_at: datetime, ending_at: datetime) -> str:
@@ -32,22 +34,22 @@ def calculate_charge_ais(row):
         return row["Manday 8 Hrs."]  # Default Manday 8 Hrs
 
 
-def read_and_process_data(folder_path_jira: str) -> pd.DataFrame:
+def read_and_process_data(folder_path_jira: str) -> DataFrame:
     """Read and process Jira data."""
-    jira_df: pd.DataFrame = jcw.read_and_combine_excel_files(
+    jira_df: DataFrame = jcw.read_and_combine_excel_files(
         folder_path=folder_path_jira
     )
     list_jira_clockwork: List[jira_clockwork] = jcw.convert_dataframe_to_jira_clockwork(
         df=jira_df
     )
-    df_ats_member: pd.DataFrame = jcw.read_and_combine_excel_files(
+    df_ats_member: DataFrame = jcw.read_and_combine_excel_files(
         prefix="List ATS Member"
     )
 
     if not list_jira_clockwork or df_ats_member.empty:
         raise ValueError("No Jira clockwork data available.")
 
-    df_jira_clockwork = pd.DataFrame([x.as_dict() for x in list_jira_clockwork])
+    df_jira_clockwork = DataFrame([x.as_dict() for x in list_jira_clockwork])
     df_jira_clockwork = df_jira_clockwork.drop_duplicates()
 
     # Merge with ATS members data
@@ -129,7 +131,7 @@ def read_and_process_data(folder_path_jira: str) -> pd.DataFrame:
     return df_jira_clockwork
 
 
-def create_pivot_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
+def create_pivot_table(df_jira_clockwork: DataFrame) -> DataFrame:
     """Create a pivot table from the Jira clockwork DataFrame."""
     df_pivot_table = pd.pivot_table(
         df_jira_clockwork,
@@ -147,7 +149,7 @@ def create_pivot_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Flatten pivot table
-    df_pivot_table = pd.DataFrame(df_pivot_table.to_records())
+    df_pivot_table = DataFrame(df_pivot_table.to_records())
     df_pivot_table["total_hours"] = df_pivot_table.iloc[:, 5:].sum(axis=1)
 
     # Add grand total
@@ -156,7 +158,7 @@ def create_pivot_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     }
     grand_total_row["comment"] = "Grand Total"
     grand_total_row["total_hours"] = df_pivot_table["total_hours"].sum()
-    grand_total_df = pd.DataFrame(grand_total_row, index=[0])
+    grand_total_df = DataFrame(grand_total_row, index=[0])
     df_pivot_table_with_grand_total = pd.concat(
         [df_pivot_table, grand_total_df], ignore_index=True
     )
@@ -164,7 +166,7 @@ def create_pivot_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     return df_pivot_table_with_grand_total
 
 
-def create_pivot_table_charge_ais(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
+def create_pivot_table_charge_ais(df_jira_clockwork: DataFrame) -> DataFrame:
     """Create a pivot table from the Jira clockwork DataFrame."""
     df_pivot_table = pd.pivot_table(
         df_jira_clockwork,
@@ -176,7 +178,7 @@ def create_pivot_table_charge_ais(df_jira_clockwork: pd.DataFrame) -> pd.DataFra
     )
 
     # Flatten pivot table
-    df_pivot_table = pd.DataFrame(df_pivot_table.to_records())
+    df_pivot_table = DataFrame(df_pivot_table.to_records())
     df_pivot_table["total_days"] = df_pivot_table.iloc[:, 3:].sum(axis=1)
 
     # Add grand total
@@ -185,14 +187,14 @@ def create_pivot_table_charge_ais(df_jira_clockwork: pd.DataFrame) -> pd.DataFra
     }
     grand_total_row["Task Detail"] = "Grand Total"
     grand_total_row["total_days"] = df_pivot_table["total_days"].sum()
-    grand_total_df = pd.DataFrame(grand_total_row, index=[0])
+    grand_total_df = DataFrame(grand_total_row, index=[0])
     df_pivot_table_with_grand_total = pd.concat(
         [df_pivot_table, grand_total_df], ignore_index=True
     )
     return df_pivot_table_with_grand_total
 
 
-def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
+def create_summary_table(df_jira_clockwork: DataFrame) -> DataFrame:
     """Create summary table for time spent."""
     df_summary = (
         df_jira_clockwork.groupby(
@@ -272,17 +274,17 @@ def create_summary_table(df_jira_clockwork: pd.DataFrame) -> pd.DataFrame:
     # Add grand total row
     grand_total_row = {col: df_summary[col].sum() for col in df_summary.columns[3:]}
     grand_total_row["Role"] = "Grand Total"
-    grand_total_df = pd.DataFrame(grand_total_row, index=[0])
+    grand_total_df = DataFrame(grand_total_row, index=[0])
     df_summary = pd.concat([df_summary, grand_total_df], ignore_index=True)
 
     return df_summary
 
 
 def save_to_excel(
-    df_jira_clockwork: pd.DataFrame,
-    df_pivot_table: pd.DataFrame,
-    df_pivot_charge_ais: pd.DataFrame,
-    df_summary: pd.DataFrame,
+    df_jira_clockwork: DataFrame,
+    df_pivot_table: DataFrame,
+    df_pivot_charge_ais: DataFrame,
+    df_summary: DataFrame,
     starting_at: datetime,
     ending_at: datetime,
     folder_path_jita: str = "",
@@ -308,19 +310,19 @@ def save_to_excel(
 def main():
     try:
         # Start timer
-        start_time = datetime.now()
+        start_time: datetime = datetime.now()
 
         # Parse input dates
-        starting_at = datetime.strptime(irt.starting_at_str, "%d/%m/%Y")
-        ending_at = datetime.strptime(irt.ending_at_str, "%d/%m/%Y")
+        starting_at: datetime = datetime.strptime(irt.starting_at_str, "%d/%m/%Y")
+        ending_at: datetime = datetime.strptime(irt.ending_at_str, "%d/%m/%Y")
 
         # Process data
-        df_jira_clockwork = read_and_process_data(folder_path_jira=irt.folder_path_jira)
+        df_jira_clockwork: DataFrame = read_and_process_data(folder_path_jira=irt.folder_path_jira)
 
         # Create reports
-        df_pivot_table = create_pivot_table(df_jira_clockwork)
-        df_pivot_charge_ais = create_pivot_table_charge_ais(df_jira_clockwork)
-        df_summary = create_summary_table(df_jira_clockwork)
+        df_pivot_table: DataFrame = create_pivot_table(df_jira_clockwork)
+        df_pivot_charge_ais: DataFrame = create_pivot_table_charge_ais(df_jira_clockwork)
+        df_summary: DataFrame = create_summary_table(df_jira_clockwork)
 
         # Save results to Excel
         save_to_excel(
