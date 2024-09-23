@@ -1,15 +1,17 @@
-from datetime import datetime
-import os
-from typing import List
 import logging
+import os
+from datetime import datetime
+from logging import Logger
+from typing import List
+
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+
+import defaultData as dd
+import input_ReportAware as irt
 import jitaClockWork as jcw
 from jitaClockWork import jira_clockwork
-import input_ReportAware as irt
-import defaultData as dd
-from logging import Logger
 
 # Setup logger
 logging.basicConfig(level=logging.INFO)

@@ -1,19 +1,21 @@
 import asyncio
+import glob
+import logging
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Union
-import requests
-from requests import Response
-import defaultData
-import logging
 from logging import Logger
+from typing import Any, Dict, List, Union
 
 import pandas as pd
-import glob
+import requests
+from requests import Response
+
+import defaultData
 
 # Setup logger
 logging.basicConfig(level=logging.INFO)
 logger: Logger = logging.getLogger(__name__)
+
 
 @dataclass
 class jira_clockwork:
@@ -120,7 +122,7 @@ def api_jira_clockwork(
         list_jira_clockwork.sort(key=lambda x: (x.author_display_name, x.started_dt))
 
     except requests.RequestException as e:
-        logging.error(f"api_jira_clockwork Request error: {e}" , exc_info=True)
+        logging.error(f"api_jira_clockwork Request error: {e}", exc_info=True)
     except Exception as e:
         logging.error(f"api_jira_clockwork Unexpected error: {e}", exc_info=True)
 
