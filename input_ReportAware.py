@@ -13,7 +13,7 @@ List_email : list[str] = [
     "xxxxxx49@postbox.in.th"
     ]
 
-folder_path = "Report/Aug 2024/"   
+folder_path_jira = "Report/Aug 2024/"  
 
 def main():
     
