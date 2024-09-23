@@ -1,15 +1,17 @@
-from datetime import datetime
 import os
+from datetime import datetime
 from typing import List
+
 import pandas as pd
 from pandas import DataFrame
-import convertJiraToList as cjtl
-import jitaClockWork as jcw
-from jitaClockWork import jira_clockwork
-from dataFillClass import data_fill_jira
-import keyTimeSheet as kt
 from selenium.webdriver.chrome.webdriver import WebDriver
+
+import convertJiraToList as cjtl
 import input_autoTimeSheet as iat
+import jitaClockWork as jcw
+import keyTimeSheet as kt
+from dataFillClass import data_fill_jira
+from jitaClockWork import jira_clockwork
 
 
 def main():
@@ -21,7 +23,7 @@ def main():
             jcw.convert_dataframe_to_jira_clockwork(df=jira_df)
         )
 
-        if list_jira_clockwork :
+        if list_jira_clockwork:
             data_fill_list: list[data_fill_jira] = cjtl.convert_jira_to_list(
                 list_jitaclockwork=list_jira_clockwork
             )
