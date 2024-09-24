@@ -69,23 +69,30 @@ def api_jira_clockwork(
 
         for data in worklogs:
             try:
-                author_display_name = data["author"]["displayName"]
-                author_email_address = data["author"]["emailAddress"]
-                project_key = data["issue"]["fields"]["project"]["key"]
-                project_name = data["issue"]["fields"]["project"]["name"].strip()
-                parent_key = data["issue"]["fields"].get("parent", {}).get("key", "")
+                author_display_name: str = data["author"]["displayName"]
+                author_email_address: str = data["author"]["emailAddress"]
+                project_key: str = data["issue"]["fields"]["project"]["key"]
+                project_name: str = (
+                    data["issue"]["fields"]["project"]["name"].replace("\n", "").strip()
+                )
+                parent_key: str = (
+                    data["issue"]["fields"].get("parent", {}).get("key", "")
+                )
                 parent_summary = (
                     data["issue"]["fields"]
                     .get("parent", {})
                     .get("fields", {})
                     .get("summary", "")
+                    .replace("\n", "")
                     .strip()
                 )
-                issue_key = data["issue"]["key"]
-                issue_type = data["issue"]["fields"]["issuetype"]["name"]
-                issue_summary = data["issue"]["fields"]["summary"].strip()
-                time_spent = data["timeSpent"]
-                time_spent_seconds = data["timeSpentSeconds"]
+                issue_key: str = data["issue"]["key"]
+                issue_type: str = data["issue"]["fields"]["issuetype"]["name"]
+                issue_summary: str = (
+                    data["issue"]["fields"]["summary"].replace("\n", "").strip()
+                )
+                time_spent: str = data["timeSpent"]
+                time_spent_seconds: int = data["timeSpentSeconds"]
                 started_dt: datetime = (
                     datetime.fromisoformat(data["started"])
                     .astimezone(defaultData.thailand_tz)
@@ -93,7 +100,7 @@ def api_jira_clockwork(
                     if "started" in data
                     else datetime.min
                 )
-                comment = data.get("comment", "").strip()
+                comment: str = data.get("comment", "").replace("\n", "").strip()
 
                 jira_data = jira_clockwork(
                     author_display_name=author_display_name,
