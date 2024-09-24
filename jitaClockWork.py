@@ -120,18 +120,18 @@ def api_jira_clockwork(
                 list_jira_clockwork.append(jira_data)
 
             except KeyError as e:
-                logging.warning(f"Missing key in data: {e}")
+                logger.warning(f"Missing key in data: {e}")
                 continue
             except Exception as e:
-                logging.error(f"Error processing worklog data: {e}")
+                logger.error(f"Error processing worklog data: {e}")
                 continue
 
         list_jira_clockwork.sort(key=lambda x: (x.author_display_name, x.started_dt))
 
     except requests.RequestException as e:
-        logging.error(f"api_jira_clockwork Request error: {e}", exc_info=True)
+        logger.error(f"api_jira_clockwork Request error: {e}", exc_info=True)
     except Exception as e:
-        logging.error(f"api_jira_clockwork Unexpected error: {e}", exc_info=True)
+        logger.error(f"api_jira_clockwork Unexpected error: {e}", exc_info=True)
 
     return list_jira_clockwork
 
@@ -169,7 +169,7 @@ async def api_jira_clockwork_async_all_token(
             if isinstance(result, list):
                 list_jira_clockwork.extend(result)
             else:
-                logging.error(f"Error in one of the tasks: {result}")
+                logger.error(f"Error in one of the tasks: {result}")
 
     return list_jira_clockwork
 
@@ -189,7 +189,7 @@ def read_and_combine_excel_files(
             df = pd.read_excel(file, sheet_name=sheet_name)
             dataframes.append(df)
         except Exception as e:
-            logging.error(f"Error reading {file}: {e}")
+            logger.error(f"Error reading {file}: {e}")
 
     # Combine all DataFrames into one
     if dataframes:
