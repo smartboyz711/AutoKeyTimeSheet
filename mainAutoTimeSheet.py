@@ -1,5 +1,7 @@
+import logging
 import os
 from datetime import datetime
+from logging import Logger
 from typing import List
 
 import pandas as pd
@@ -12,6 +14,10 @@ import jitaClockWork as jcw
 import keyTimeSheet as kt
 from dataFillClass import data_fill_jira
 from jitaClockWork import jira_clockwork
+
+# Setup logger
+logging.basicConfig(level=logging.INFO)
+logger: Logger = logging.getLogger(__name__)
 
 
 def main():
@@ -37,15 +43,15 @@ def main():
             start_time = datetime.now()
             date_today = start_time.strftime("%d%m%Y_%H%M%S")
             filename_report = f"Aware_time_sheet_report_{date_today}.xlsx"
-            pathname = "Report"
+            pathname = iat.folder_path
             # Create Path
             os.makedirs(pathname, exist_ok=True)
 
             outputdir = f"{pathname}/{filename_report}"
             df_data_fill.to_excel(excel_writer=outputdir, index=False)
 
-            print("fill time Sheet Success you can check result ==> " + outputdir)
+            logger.info("fill time Sheet Success you can check result ==> " + outputdir)
             driver.close()
 
     except Exception as e:
-        print(f"An error occurred Cannot Key time sheet. : {e})")
+        logger.error(f"An error occurred Cannot Key time sheet. : {e})", exc_info=True)
