@@ -268,7 +268,8 @@ def create_summary_table(df_jira_clockwork: DataFrame) -> DataFrame:
             "non_billable_hour",
             "non_billable_day",
             "summary_billable_day",
-            "working_days"
+            "working_days",
+            "total_charge_ais"
         ]
     ].sort_values(["Room", "Role"])
 
