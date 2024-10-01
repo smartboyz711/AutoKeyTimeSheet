@@ -236,5 +236,7 @@ def convert_dataframe_to_jira_clockwork(df: pd.DataFrame) -> List[jira_clockwork
             else "",  # Handle NaN values
         )
         jira_objects.append(jira_obj)
-
+        
+    jira_objects.sort(key=lambda x: (x.author_display_name, x.started_dt))
+    
     return jira_objects
