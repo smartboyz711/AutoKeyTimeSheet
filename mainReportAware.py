@@ -51,6 +51,8 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
 
     df_jira_clockwork = DataFrame([x.as_dict() for x in list_jira_clockwork])
     df_jira_clockwork = df_jira_clockwork.drop_duplicates()
+    
+    df_jira_clockwork = df_jira_clockwork.sort_values(by=["started_dt","author_display_name"], ascending=False)
 
     # Merge with ATS members data
     df_jira_clockwork = pd.merge(
