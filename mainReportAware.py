@@ -48,6 +48,9 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
 
     if not list_jira_clockwork or df_ats_member.empty:
         raise ValueError("No Jira clockwork data available.")
+    
+    if df_ats_member.empty:
+        raise ValueError("No List ATS Member data available.")
 
     df_jira_clockwork = DataFrame([x.as_dict() for x in list_jira_clockwork])
     df_jira_clockwork = df_jira_clockwork.drop_duplicates()
