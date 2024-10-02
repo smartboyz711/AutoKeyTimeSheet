@@ -54,7 +54,8 @@ def determine_task(jitaclockwork: jira_clockwork) -> str:
 
 def determine_bill_type(jitaclockwork: jira_clockwork, task: str) -> str:
     if task == "Leave" or (
-        jitaclockwork.issue_type == "Activity"
+        jitaclockwork.parent_summary == "All Activity"
+        and jitaclockwork.issue_type == "Activity"
         and jitaclockwork.issue_summary == "ATS Activity"
     ):
         return "Non-Billable"
