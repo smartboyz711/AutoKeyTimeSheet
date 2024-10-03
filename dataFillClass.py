@@ -39,7 +39,7 @@ class data_fill_jira(data_fill):
 
     def description_str(self) -> str:
         task_detail: str = self.comment or self.issue_summary
-        return f"Project: {self.project_key}-{self.project_name}\nTask Detail: {task_detail}"
+        return f"Project-Key: {self.project_key}-{self.project_name}\nTask Detail: {task_detail}"
 
     def as_dict(self) -> dict:
         return {
