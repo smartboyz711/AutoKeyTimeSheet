@@ -6,7 +6,6 @@ import defaultData
 
 @dataclass()
 class data_fill:
-
     customer: str
     project: str
     role: str
@@ -31,7 +30,7 @@ class data_fill:
 
 @dataclass()
 class data_fill_jira(data_fill):
-
+    project_key: str
     project_name: str
     parent_summary: str
     issue_Type: str
@@ -39,10 +38,8 @@ class data_fill_jira(data_fill):
     comment: str
 
     def description_str(self) -> str:
-        if self.bill_type == "Overtime":
-            return self.comment
-        else:
-            return f"Project: {self.project_name}\nTask: {self.parent_summary}\n{self.issue_Type}: {self.issue_summary}\nComment: {self.comment}"
+        task_detail: str = self.comment or self.issue_summary
+        return f"Project: {self.project_key}-{self.project_name}\nTask Detail: {task_detail}"
 
     def as_dict(self) -> dict:
         return {

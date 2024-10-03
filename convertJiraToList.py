@@ -86,6 +86,7 @@ def convert_jira_to_list(
             filldatetime=jitaclockwork.started_dt,
             hours=hours,
             status_message="",
+            project_key=jitaclockwork.project_key,
             project_name=jitaclockwork.project_name,
             parent_summary=jitaclockwork.parent_summary,
             issue_Type=jitaclockwork.issue_type,
