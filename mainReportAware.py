@@ -46,9 +46,9 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
         prefix="List ATS Member"
     )
 
-    if not list_jira_clockwork or df_ats_member.empty:
+    if not list_jira_clockwork:
         raise ValueError("No Jira clockwork data available.")
-    
+
     if df_ats_member.empty:
         raise ValueError("No List ATS Member data available.")
 
@@ -130,8 +130,10 @@ def read_and_process_data(folder_path_jira: str) -> DataFrame:
             "Charge AIS",
         ]
     ]
-    
-    df_jira_clockwork = df_jira_clockwork.sort_values(by=["author_display_name","started_dt"], ascending=True)
+
+    df_jira_clockwork = df_jira_clockwork.sort_values(
+        by=["author_display_name", "started_dt"], ascending=True
+    )
 
     return df_jira_clockwork
 
@@ -272,7 +274,7 @@ def create_summary_table(df_jira_clockwork: DataFrame) -> DataFrame:
             "non_billable_day",
             "summary_billable_day",
             "working_days",
-            "total_charge_ais"
+            "total_charge_ais",
         ]
     ].sort_values(["Room", "Role"])
 
