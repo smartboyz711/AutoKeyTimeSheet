@@ -26,8 +26,9 @@ def seconds_to_timefloat(seconds: int) -> float:
 
 def determine_task(jitaclockwork: jira_clockwork) -> str:
     if (
-        jitaclockwork.parent_summary.lower() == "all leaves"
+        jitaclockwork.parent_summary == "All Activity"
         and jitaclockwork.issue_type == "Activity"
+        and jitaclockwork.issue_summary == "ATS Activity"
     ):
         return "Leave"
     elif (
